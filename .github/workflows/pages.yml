@@ -21,6 +21,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
+        with: 
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          # 把子模块打开
+          submodules: 'true'
       - name: Use Node.js 12.x
         uses: actions/setup-node@v1
         with:
