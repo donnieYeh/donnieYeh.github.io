@@ -1,0 +1,3 @@
+[submodule "themes/jekyll"]
+	path = themes/jekyll
+	url = git@github.com:xr08255920/beautiful-hexo.git
