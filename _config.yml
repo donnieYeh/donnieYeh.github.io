@@ -110,3 +110,8 @@ archive_generator:
     yearly: false
     monthly: false
     daily: false
+
+search:
+  path: search.xml
+  field: post
+  content: true

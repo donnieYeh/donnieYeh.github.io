@@ -6,4 +6,5 @@ node_modules/
 public/
 .deploy*/
 .github/
-
+source/_posts/.obsidian/
+plugin/
