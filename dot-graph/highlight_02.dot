@@ -1,0 +1,33 @@
+/* 1. 将.md文件的代码片段渲染成html语言
+2. 对html语言中的代码片段进行语法解析，给各个关键词标记上相应的样式class
+3. 引入高亮样式CSS文件，使高亮样式生效 */
+digraph G {
+    splines="FALSE";
+    rankdir=LR
+    node[shape=box,fontname="MICROSOFT YAHEI"]
+    graph[fontname="MICROSOFT YAHEI"]
+
+    /* Entities */
+    randermd[label="渲染md成html"]
+    annalizeCodeBlock[label="解析、改造html"]
+    addCssStyle[label="引入css"]
+
+    randermd -> annalizeCodeBlock
+    annalizeCodeBlock -> addCssStyle
+
+    subgraph cluster_serverRender{
+        color = red
+        label = 服务器渲染
+        fontcolor = red
+        randermd
+    }
+
+    subgraph cluster_clientRender{
+        color = green
+        label = 客户端渲染
+        fontcolor = green
+        annalizeCodeBlock
+        addCssStyle
+    }
+}
+

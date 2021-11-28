@@ -8,3 +8,4 @@ public/
 .github/
 source/_posts/.obsidian/
 plugin/
+.vscode/

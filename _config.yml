@@ -5,7 +5,7 @@
 # Site
 title: YeJF的篝火
 subtitle: '回血、存档、再出发'
-description: '来自虚无主义者的一些想法记录'
+description: 'Loneliness is not the same as loneliness, loneliness will panic, loneliness is full.'
 keywords:
 author: yejf
 language: zh-cn
@@ -45,11 +45,11 @@ relative_link: false
 future: true
 highlight:
   enable: true
-  line_number: true
-  auto_detect: false
+  line_number: false
+  auto_detect: true
   tab_replace: ''
-  wrap: true
-  hljs: false
+  wrap: false
+  hljs: true
 prismjs:
   enable: false
   preprocess: true

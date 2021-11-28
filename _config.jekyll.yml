@@ -1,6 +1,6 @@
 navbar-links:
     Archive: /archives
-    Github: https://github.com/twoyao/beautiful-hexo
+    Github: https://xr08255920.github.io/
     About: /about/
     Tags: /tags/
 
@@ -9,7 +9,7 @@ favicon: /hexo.png
 
 header:
     title: "Yejf的篝火"
-    motto: Build a beautiful and simple website in minutes
+    motto: Loneliness is not the same as loneliness, loneliness will panic, loneliness is full.
     bigimgs:
         - src: /bigimgs/87369142_p0_master1200.jpg
         - src: /bigimgs/87706186_p0_master1200.jpg
@@ -27,8 +27,10 @@ googlefonts:
 highlight:
   enable: true
 # or use any highlight.js style
-#  style_path: "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css"
-  style_path: "/css/highlight.css"
+  # style_path: "/css/highlight.css"
+  # style_path: "//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/styles/default.min.css"
+  style_path: "/css/styles/kimbie-dark.css"
+
 
 footer:
   facebook:
@@ -76,7 +78,7 @@ google_analytics:
 
 comment:
   # false, disqus, netease or facebook
-  enable: netease
+  enable: false
   # disqus user, netease productKey or facebook appid 
   id: 64d7f0abf9224be3bfdcc6cfb9b83fcf
   # [facebook only] plugin language 
