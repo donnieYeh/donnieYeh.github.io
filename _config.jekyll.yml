@@ -32,19 +32,10 @@ highlight:
   style_path: "/css/styles/kimbie-dark.css"
 
 
+# 自动解析该配置，可以追加任意多个图标
 footer:
-  facebook:
-    link: # your link e.g. https://...
-    title: Facebook
-    icon: fa-facebook
-    enable: false
-  weibo:
-    link: 'http://weibo.com/bisyao?is_all=1'
-    title: Weibo
-    icon: fa-weibo
-    enable: true
   github:
-    link: 'https://github.com/twoyao'
+    link: 'https://github.com/xr08255920'
     title: GitHub
     icon: fa-github
     enable: true
@@ -52,29 +43,17 @@ footer:
     link: '/atom.xml'
     title: RSS
     icon: fa-rss
-    enable: true
-  twitter:
-    link: 'https://twitter.com/twoyao_'
-    title: Twitter
-    icon: fa-twitter
-    enable: true
+    enable: false
   mail:
-    link: 'mailto:bisyao@gmail.com'
+    link: 'mailto:xr08255920@gmail.com'
     title: Email me
     icon: fa-envelope
     enable: true
-  linkin:
-    link: # your link here e.g. http...
-    title: LinkedIn
-    icon: fa-linkedin
-    enable: false
-  stackoverflow:
-    link: # your link here e.g. http...
-    title: StackOverflow
-    icon: fa-stack-overflow
-    enable: false
 
 google_analytics:
+
+site_counter:
+  show: true
 
 comment:
   # false, disqus, netease or facebook
