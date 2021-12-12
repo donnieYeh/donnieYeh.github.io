@@ -1,5 +1,5 @@
 ---
-title:  Graphviz
+title:  Graphviz实践手册
 date: 2021-11-26 19:59:13
 tags:
 ---
@@ -38,7 +38,7 @@ tags:
 
 
 ## shape
-![[Pasted image 20201218173054.png]]
+![](/images/Pasted%20image%2020201218173054.png)
 
 ## 子图边框样式
 ```
@@ -47,7 +47,7 @@ subgraph{
 }
 ```
 可选样式：
-![[Pasted image 20201222153845.png]]
+![](/images/Pasted%20image%2020201222153845.png)
 
 ## 允许子图边界可以被指定
 ```

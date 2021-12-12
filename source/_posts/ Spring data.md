@@ -95,7 +95,7 @@ Collection<User> findAllActiveUsersNative();
 3. mapper，定义相关的Query（在JPA中，一个方法就是一个mapper）
 
 图示：
-![[Pasted image 20201222154530.png]]
+![](/images/Pasted%20image%2020201222154530.png)
 
 #### JPA需要准备环境
 对于JPA，是一回事。

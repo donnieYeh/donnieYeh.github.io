@@ -28,7 +28,7 @@ sed -选项 "行,行 动作命令 动作命令参数 显示命令(p)" 文件
 ```shell
 # 先通过grep找到想要的内容
 $ grep "\!\[" *
-> Graphviz.md:![[Pasted_image_20201218173054.png]]
+> Graphviz.md:![](/images/Pasted_image_20201218173054.png)
 
 # 使用sed -n 模式看下替换效果（-r表示使用正则）
 # 先写个伪代码
@@ -57,7 +57,7 @@ Permalink是指部署网站时文章的url路径的展示方式。
 - pangu：盘古空白，可以自动给中英文间插入空白
 
 ### 主题渲染原理
-![[Pasted image 20211124145841.png]]
+![](/images/Pasted%20image%2020211124145841.png)
 
 
 ### 模板引擎

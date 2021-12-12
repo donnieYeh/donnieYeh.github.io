@@ -6,7 +6,7 @@ tags:
 ### aspect语法
 #### call和execution的区别
 结合这篇[java - Difference between call and execution pointcuts in PHP? - Stack Overflow](https://stackoverflow.com/questions/28251596/difference-between-call-and-execution-pointcuts-in-php/28252742#28252742)食用
-![[Pasted image 20210820103450.png]]
+![](/images/Pasted%20image%2020210820103450.png)
 
 重点：But wait a minute, it still makes a difference: `execution` is just woven in one place while `call` it woven into potentially many places, so the amount of code generated is smaller for `execution`.
 

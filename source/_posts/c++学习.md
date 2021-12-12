@@ -91,5 +91,5 @@ int array[] {1,2,3,6,7,8};
 
 ## 概念图
 ### 编译过程
-![[img/Pasted image 20201114230333.png]]
+![](/images/img/Pasted%20image%2020201114230333.png)
 

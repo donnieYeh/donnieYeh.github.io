@@ -54,7 +54,7 @@ blockquote {
 [从 0 到 1 开发 Hexo 主题杂谈 | Liuyib's Blog](https://liuyib.github.io/2019/08/20/develop-hexo-theme-from-0-to-1/)
 
 ### 样式
-![[Pasted image 20211127182011.png]]
+![](/images/Pasted%20image%2020211127182011.png)
 
 ### 使用框架
 [GitHub - Liam0205/hexo-search-plugin-snippets: 一些辅助 `hexo-generator-search` 插件的代码片段，博客右上角看效果 ---->](https://github.com/Liam0205/hexo-search-plugin-snippets)
@@ -120,10 +120,10 @@ date: 2021-11-28 05:45:59
 
 而在hexo中，对于这3步有两种渲染模式：服务器渲染 和 客户端渲染
 - 服务器渲染：由服务器执行步骤 1 和 2
-![[highlight_01.png]]
+![](/images/highlight_01.png)
 
 - 客户端渲染：由客户端执行步骤 2 和 3
-![[highlight_02.png]]
+![](/images/highlight_02.png)
 
 ### 说在前头
 必须注意的一点是，任何关于高亮的改动，都需要执行`hexo clean`后再渲染才能生效。
@@ -215,9 +215,9 @@ highlight官方高亮样式主题地址：https://github.com/highlightjs/highlig
 通过上面的实践，我们已经对代码高亮的原理有了一个感性的理解了。此时我们甚至可以放弃hexo原生指定的代码高亮库highlight，自定义改造使用一些第三方的代码高亮库及颜色主题。比如[google-code-prettify](https://github.com/jmblog/color-themes-for-google-code-prettify)
 
 #### 为什么样式只覆盖到代码行？
-![[Pasted image 20211128195458.png]]
+![](/images/Pasted%20image%2020211128195458.png)
 这么难看，不能忍啊，经过一番研究得出结论,`<code>`标签需要设置样式：`display:block`，不然有可能被bootstrap的样式影响到了，就会变成这样。修复之后好看多了
-![[Pasted image 20211128195644.png]]
+![](/images/Pasted%20image%2020211128195644.png)
 
 
 ## 添加访问日志数据统计
@@ -284,10 +284,10 @@ mixin post_meta(date, tags, showviews)
 
 ### 效果
 文章首部
-![[Pasted image 20211129230131.png]]
+![](/images/Pasted%20image%2020211129230131.png)
 
 文章底部
-![[Pasted image 20211129230106.png]]
+![](/images/Pasted%20image%2020211129230106.png)
 
 
 

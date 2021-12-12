@@ -1,5 +1,5 @@
 ---
-title:  linux系统目录层级标准
+title:  linux系统目录层级标准——/bin、/usr/bin、/usr/local/bin、/opt的区别
 date: 2021-11-26 19:59:13
 tags:
 ---
