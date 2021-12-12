@@ -1,5 +1,5 @@
 ---
-title:  disruptor
+title:  disruptor学习记录
 date: 2021-11-26 19:59:13
 tags:
 ---

@@ -1,7 +1,7 @@
 ---
 title:  cpp
 date: 2021-11-26 19:59:13
-tags:
+tags: c++
 ---
 ### Include
 `#include` 明显是预编译命令，作用是把真正的代码段替换掉命令所在位置。
