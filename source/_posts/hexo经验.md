@@ -6,6 +6,8 @@ categories:
 ---
 ### 图片加载不出
 - asset文件名不能有空格
+	- 文件名、引用都去掉空格
+	- 或者引用的空格进行url编码：%20
 - marked渲染器的appendRoot，是指给asset地址插入 root 值
 
 ### 批量修改文件名
