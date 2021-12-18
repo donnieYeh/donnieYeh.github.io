@@ -1,7 +1,10 @@
 ---
 title: js模块化简述
 date: 2021-12-09 10:05
-tags: javascript modular 模块化
+tags: 
+- javascript
+- modular
+- 模块化
 categories: js系列
 ---
 
