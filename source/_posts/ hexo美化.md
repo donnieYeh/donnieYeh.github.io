@@ -375,6 +375,33 @@ CDN本质上是分布式缓存，所以同一个地址，即便你服务端的�
 ## 添加滚动条皮肤
 [Hexo系列（二）：修改hexo主题 | cv-programmer](https://cv-programmer.github.io/2021/03/15/Hexo%E7%B3%BB%E5%88%97%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BF%AE%E6%94%B9hexo%E4%B8%BB%E9%A2%98/)
 
+[chrome 自定义滚动条样式 | 从零开始的故事 (rem486.github.io)](https://rem486.github.io/web/css/chrome-scroll-bar.html)
+
+[动态加载css | 冷云 (lengyun.github.io)](http://lengyun.github.io/js/3-2-2dynamicAddCSS.html#%E4%B8%8E%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BDjs%E7%9A%84%E5%8C%BA%E5%88%AB)
+
+```css
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
+    border-radius: 8px;
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: #bbb;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
+}
+/* 非激活窗口 */
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(0,255,0,0.4);
+}
+```
+
 ## 添加标签云
 
 ## 添加大纲

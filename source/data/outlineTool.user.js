@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         outlineTool
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  try to take over the world!
 // @author       yejf
 // @match        https://*/*
@@ -25,6 +25,8 @@
     outline.style.overflow = "scroll"
     outline.style.zIndex = 100
     outline.style.width = "300px"
+
+    loadStyleString("/*设置滚动条的样式*/#outline::-webkit-scrollbar{width:8px;height:8px;}/*滚动槽*/#outline::-webkit-scrollbar-track{-webkit-box-shadow:inset006pxrgba(0,0,0,0.2);border-radius:8px;}/*滚动条滑块*/#outline::-webkit-scrollbar-thumb{border-radius:8px;background:#bbb;-webkit-box-shadow:inset006pxrgba(0,0,0,0.25);}/*非激活窗口*/#outline::-webkit-scrollbar-thumb:window-inactive{background:rgba(0,255,0,0.4);}");
 
     document.body.append(outline)
 
@@ -165,6 +167,19 @@
         let nodes = document.querySelectorAll(query.join(","))
         return nodes
     }
+
+    function loadStyleString(css){
+        var style = document.createElement("style");
+        style.type = "text/css";
+        try{
+            style.appendChild(document.createTextNode(css));
+        } catch (ex){
+            style.textContent = css;
+        }
+        var head = document.getElementsByTagName("head")[0];
+        head.appendChild(style);
+    }
+
 
 
 })();
