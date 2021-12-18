@@ -59,7 +59,7 @@ require(['mathlib'], function(mathlib) {
 
 requireJS也有它的问题，首先整个模式围绕着它的异步请求能力，这导致了每个引用点都要发起网络请求获取对应的模块，这会导致一个页面发起瀑布式的上百个加载模块的网络请求，这无疑是性能很差的一件事。为此，需要引入一个构建工具，把所有模块整合成一个脚本，包含冗长的依赖链、require函数、和回调参数
 
-### AngularJS
+#### AngularJS
 AngularJS中的依赖注入系统也遇到了许多相同的问题。它通过解析参数名来解决依赖问题。但是这导致了进行代码混淆时，参数名被改变而依赖失败的问题。在AngularJS v1后期，引入了一个构建任务来解决这个问题，它会进行如下的代码转换：
 ```javascript
 //转换前
@@ -104,7 +104,7 @@ import('./mathlib').then(mathlib => {
 })
 ```
 
-同CJS一样，ESM约定一个文件就是第一个模块。而优秀于CJS的地方是ESM能引用静态依赖，静态依赖意味着可以无需运行代码就能被工具检测出相关的依赖，我猜应该是能够便于编辑工具进行依赖解析吧，对书本原文说的“内省”不是很理解。（参考：[javascript - what is the meaning of static import in ES6? - Stack Overflow](https://stackoverflow.com/questions/52965907/what-is-the-meaning-of-static-import-in-es6)）。
+同CJS一样，ESM约定一个文件就是一个模块。而优秀于CJS的地方是ESM能引用静态依赖，静态依赖意味着可以无需运行代码就能被工具检测出相关的依赖，我猜应该是能够便于编辑工具进行依赖解析吧，对书本原文说的“内省”不是很理解。（参考：[javascript - what is the meaning of static import in ES6? - Stack Overflow](https://stackoverflow.com/questions/52965907/what-is-the-meaning-of-static-import-in-es6)）。
 
 > Static imports vastly improve the introspection capabilities of module systems, given they can be analyzed statically and lexically extracted from the abstract syntax tree (AST) of each module in the system.	——\<mastering-modular-javascript\>
 
@@ -136,7 +136,7 @@ ___
 		```javascript
 		// 纯粹函数
 		function sum(numbers) {
-  			return numbers.reduce((a, b) => a + b, 0)
+			return numbers.reduce((a, b) => a + b, 0)
 		}
 		
 		// 非纯粹函数，每次调用的结果可能被其他调用影响
