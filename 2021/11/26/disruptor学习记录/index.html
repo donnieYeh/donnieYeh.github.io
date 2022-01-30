@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="author" content="yejf"><link rel="icon" href="/avatar.jpg"><title>disruptor学习记录</title><meta name="description" content="Loneliness is not the same as loneliness, loneliness will panic, loneliness is full."><link rel="alternate" type="application/rss+xml" title="YeJF的篝火" href="/atom.xml"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/styles/kimbie-dark.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><meta name="generator" content="Hexo 5.4.0"></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class="container-fluid"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/" class="navbar-brand">YeJF的篝火</a></div><div id="main-navbar" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><form class="site-search-form"><i aria-hidden="true" class="fa fa-search icon"></i><input type="text" id="local-search-input" class="local-search-input-cls"></form><div id="local-search-result" class="local-search-result-cls"></div></li><li><a href="/archives">Archive</a></li><li><a href="https://xr08255920.github.io/">Github</a></li><li><a href="/about/">About</a></li><li><a href="/tags/">Tags</a></li></ul></div><div class="avatar-container"><div class="avatar-img-border"><a href="/"><img src="/avatar.jpg" class="avatar-img"></a></div></div></div></nav><header class="header-section"><div class="intro-header no-img"><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class="post-heading"><h1>disruptor学习记录</h1><p class="post-meta">Posted on 11月 26 2021<span class="post-meta-group"><span id="busuanzi_container_page_pv"> <span class="with-love"> <i class="fa fa-eye"> </i></span><span>阅读次数：</span><span id="busuanzi_value_page_pv"></span></span></span></p></div></div></div></div></div></header><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role="main" class="blog-post"><h2 id="术语概念"><a href="#术语概念" class="headerlink" title="术语概念"></a>术语概念</h2><p><a target="_blank" rel="noopener" href="https://github.com/LMAX-Exchange/disruptor/wiki/Introduction#core-concepts">参考地址</a></p>
+<p>RingBuffer——Disruptor底层数据结构实现，核心类，是线程间交换数据的中转地；</p>
+<p>Sequencer——序号管理器，生产同步的实现者，负责消费者/生产者各自序号、序号栅栏的管理和协调,Sequencer有单生产者,多生产者两种不同的模式,里面实现了各种同步的算法；</p>
+<p>Sequence——序号，声明一个序号，用于跟踪ringbuffer中任务的变化和消费者的消费情况，disruptor里面大部分的并发代码都是通过对Sequence的值同步修改实现的,而非锁,这是disruptor高性能的一个主要原因；</p>
+<p>SequenceBarrier——序号栅栏，管理和协调生产者的游标序号和各个消费者的序号，确保生产者不会覆盖消费者未来得及处理的消息，确保存在依赖的消费者之间能够按照正确的顺序处理</p>
+<p>EventProcessor——事件处理器，监听RingBuffer的事件，并消费可用事件，从RingBuffer读取的事件会交由实际的生产者实现类来消费；它会一直侦听下一个可用的序号，直到该序号对应的事件已经准备好。</p>
+<p>EventHandler——业务处理器，是实际消费者的接口，完成具体的业务逻辑实现，第三方实现该接口；代表着消费者。</p>
+<p>Producer——生产者接口，第三方线程充当该角色，producer向RingBuffer写入事件。</p>
+<p>Wait Strategy：Wait Strategy决定了一个消费者怎么等待生产者将事件（Event）放入Disruptor中。</p>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MsgEventMain</span> </span>&#123;  
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException </span>&#123;  
+        Disruptor disruptor = <span class="hljs-keyword">new</span> Disruptor(<span class="hljs-keyword">new</span> MsgEventFactory(), <span class="hljs-number">1024</span>, Executors.defaultThreadFactory()  
+                , ProducerType.SINGLE, <span class="hljs-keyword">new</span> BlockingWaitStrategy());  <span class="hljs-comment">// ①</span>
+        disruptor.handleEventsWith(<span class="hljs-keyword">new</span> MsgEventHandler());  <span class="hljs-comment">//②</span>
+        disruptor.start();  <span class="hljs-comment">//③</span>
+        RingBuffer ringBuffer = disruptor.getRingBuffer();  <span class="hljs-comment">//④</span>
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;  
+            <span class="hljs-keyword">int</span> finalI = i;  
+            EventTranslator&lt;MsgEvent&gt; eventTranslator = (event, sequence) -&gt; &#123;  
+                event.setMsg(<span class="hljs-string">&quot;business msg:&quot;</span> + finalI);  
+            &#125;;  
+            ringBuffer.publishEvent(eventTranslator);  <span class="hljs-comment">//⑤</span>
+            Thread.sleep(<span class="hljs-number">300</span>);  
+        &#125;  
+        disruptor.shutdown();  
+    &#125;  
+&#125;</code></pre>
+
+<p>核心分为五步：</p>
+<ol>
+<li>创建一个disruptor<blockquote>
+<p>（构造涉及 1. Event工厂；    2. 线程工厂;    3. 生产策略：多线程、单线程    4. 消费等待策略）</p>
+</blockquote>
+</li>
+<li>指定消费者</li>
+<li>启动disruptor</li>
+<li>从disruptor中获取 ringbuffer</li>
+<li>生产者调用 <code>ringBuffer.publishEvent</code> 发消息<blockquote>
+<p>此处需要一个eventTranslator，来填充消息内容）</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="官方实践"><a href="#官方实践" class="headerlink" title="官方实践"></a>官方实践</h3><ol>
+<li>每个productor维护自己的 translator 的静态实例作为成员变量，且注入ringBuffer，用于生产消息</li>
+</ol>
+<h3 id="可调优项"><a href="#可调优项" class="headerlink" title="可调优项"></a>可调优项</h3><p>核心5步可以覆盖大多数生产场景使用，但是有些可调参数可以用于促进性能，分别是</p>
+<ol>
+<li>生产策略：多线程、单线程</li>
+<li>消费等待策略</li>
+</ol>
+<h4 id="等待策略"><a href="#等待策略" class="headerlink" title="等待策略"></a>等待策略</h4><p><strong>「BlockingWaitStrategy」</strong></p>
+<p>Disruptor的默认策略是BlockingWaitStrategy。在BlockingWaitStrategy内部是使用锁和condition来控制线程的唤醒。BlockingWaitStrategy是最低效的策略，但其对CPU的消耗最小并且在各种不同部署环境中能提供更加一致的性能表现。</p>
+<p><strong>「SleepingWaitStrategy」</strong></p>
+<p>SleepingWaitStrategy 的性能表现跟 BlockingWaitStrategy 差不多，对 CPU 的消耗也类似，但其对生产者线程的影响最小，通过使用<code>LockSupport.parkNanos(1)</code>来实现循环等待。</p>
+<p><strong>「YieldingWaitStrategy」</strong></p>
+<p>YieldingWaitStrategy是可以使用在低延迟系统的策略之一。YieldingWaitStrategy将自旋以等待序列增加到适当的值。在循环体内，将调用<code>Thread.yield()</code>以允许其他排队的线程运行。在要求极高性能且事件处理线数小于 CPU 逻辑核心数的场景中，推荐使用此策略；例如，CPU开启超线程的特性。</p>
+<p><strong>「BusySpinWaitStrategy」</strong></p>
+<p>性能最好，适合用于低延迟的系统。在要求极高性能且事件处理线程数小于CPU逻辑核心数的场景中，推荐使用此策略；例如，CPU开启超线程的特性。</p>
+<p><strong>「PhasedBackoffWaitStrategy」</strong></p>
+<p>自旋 + yield + 自定义策略，CPU资源紧缺，吞吐量和延迟并不重要的场景。</p>
+</article><ul class="pager blog-pager"><li class="previous"><a href="/2021/11/26/db%E9%94%81/" data-toggle="tooltip" data-placement="top" title="db锁">上一篇</a></li><li class="next"><a href="/2021/11/26/guice%E5%AE%9E%E8%B7%B5%E6%89%8B%E5%86%8C/" data-toggle="tooltip" data-placement="top" title="guice实践手册">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/xr08255920" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
+    <a target="_blank" rel="noopener" href="https://github.com/twoyao/beautiful-hexo">beautiful-hexo</a></span></p></div></div></div></footer><script src="//cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script><script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/js/main.js"></script><!-- 代码高亮--><!-- 导航栏搜索框--><script src="/js/search.js"></script><script type="text/javascript" id="local.search.active">var inputArea       = document.querySelector("#local-search-input");
+inputArea.onclick   = function(){ getSearchFile(); this.onclick = null }
+inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 切换标签彩蛋--><script src="/js/crash_cheat.js"> </script><!--看板娘--><script src="/live2d-widget/autoload.js"> </script></body></html>

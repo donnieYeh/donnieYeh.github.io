@@ -1,5 +1,7 @@
 /*@import url("pygment_highlights.css");*/
 
+@import url("custom.css");
+
 /* --- General --- */
 
 body {
@@ -8,6 +10,8 @@ body {
   color: #404040;
   position: relative;
   background: #FFF;
+  background-image: url(/bgimg/bgimage.png);
+  background-attachment: fixed;
 }
 p {
   line-height: 1.5;
@@ -127,6 +131,8 @@ img {
     -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
     -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
     transition: background .5s ease-in-out,padding .5s ease-in-out;
+    background-image: url(/bgimg/bgimage.png);
+    background-attachment: fixed;
   }
 
   .navbar-custom.top-nav-short {
@@ -242,6 +248,8 @@ footer {
   border-top: 1px #EAEAEA solid;
   margin-top: 50px;
   font-size: 14px;
+  background-image: url(/bgimg/bgimage.png);
+  background-attachment: fixed;
 }
 
 footer a {

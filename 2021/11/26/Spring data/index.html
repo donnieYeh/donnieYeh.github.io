@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="author" content="yejf"><link rel="icon" href="/avatar.jpg"><title>Spring data</title><meta name="description" content="Loneliness is not the same as loneliness, loneliness will panic, loneliness is full."><link rel="alternate" type="application/rss+xml" title="YeJF的篝火" href="/atom.xml"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/styles/kimbie-dark.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><meta name="generator" content="Hexo 5.4.0"></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class="container-fluid"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/" class="navbar-brand">YeJF的篝火</a></div><div id="main-navbar" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><form class="site-search-form"><i aria-hidden="true" class="fa fa-search icon"></i><input type="text" id="local-search-input" class="local-search-input-cls"></form><div id="local-search-result" class="local-search-result-cls"></div></li><li><a href="/archives">Archive</a></li><li><a href="https://xr08255920.github.io/">Github</a></li><li><a href="/about/">About</a></li><li><a href="/tags/">Tags</a></li></ul></div><div class="avatar-container"><div class="avatar-img-border"><a href="/"><img src="/avatar.jpg" class="avatar-img"></a></div></div></div></nav><header class="header-section"><div class="intro-header no-img"><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class="post-heading"><h1>Spring data</h1><p class="post-meta">Posted on 11月 26 2021<span class="post-meta-group"><span id="busuanzi_container_page_pv"> <span class="with-love"> <i class="fa fa-eye"> </i></span><span>阅读次数：</span><span id="busuanzi_value_page_pv"></span></span></span></p></div></div></div></div></div></header><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role="main" class="blog-post"><p>Spring repository（Spring data common） 负责定义应用和数据库服务之间的抽象API接口。<br>Spring repository 从对接的数据库类型上看有多种实现，关系型数据库、nosql、内存数据库、云数据库等等。</p>
+<p>Spring repository 对关系型数据库的实现，最主流的有 Spring Data JPA，底层使用Hibernate 这种ORM框架，此外原生一点的实现有 Spring Data JDBC。</p>
+<p>不同的实现，需要接入不同的数据源，不同的数据源由统一的公共API操作。各数据源需要单独配置，配置相应的连接参数，如使用jdbc-Mysql作为数据源，则要为DataSource配置相应的连接串、账号、密码等等。</p>
+<p>小结<br>Spring repository  –&gt; Spring Data JPA/JDBC/MongoDB…. –&gt; mysql/oracle/h2/… </p>
+<h2 id="Spring-JPA"><a href="#Spring-JPA" class="headerlink" title="Spring JPA"></a>Spring JPA</h2><h3 id="引入步骤"><a href="#引入步骤" class="headerlink" title="引入步骤"></a>引入步骤</h3><p>要使用Spring Data，有一下步骤</p>
+<ol>
+<li>pom 引入 spring-boot-starter-data-jpa<ol>
+<li><blockquote>
+<p>自动依赖 spring Data common</p>
+</blockquote>
+</li>
+</ol>
+</li>
+<li>pom 引入DataSource需要的引擎，如Driven等</li>
+<li>自行在 Configuration 中配置 DataSource</li>
+<li>编写model的interface，继承对应的repository，如JPA实现则继承JPArepository。Spring Data 将会自动的扫描所有 Repository，并通过动态代理来实现它。</li>
+<li>在Configuration 中设置 @EnableJpaRepositories 使Spring Data生效</li>
+</ol>
+<p>####设置</p>
+<pre><code class="hljs java"><span class="hljs-meta">@EnableJpaRepositories(basePackages = &quot;com.baeldung.spring.data.persistence.repository&quot;)</span> 
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PersistenceConfig</span> </span>&#123; 
+    ...
+&#125;</code></pre>
+
+<h3 id="自定义DB操作"><a href="#自定义DB操作" class="headerlink" title="自定义DB操作"></a>自定义DB操作</h3><p>Spring Data 默认已经对Repository 生成好基本的db操作了。但难免有时还是无法满足需求，此时需要自定义DB操作，有如下方式可选：</p>
+<ol>
+<li>命名规则自定义查询</li>
+<li>手动sql自定义查询</li>
+</ol>
+<h4 id="命名规则自定义查询"><a href="#命名规则自定义查询" class="headerlink" title="命名规则自定义查询"></a>命名规则自定义查询</h4><p>在 Repository 接口中定义新方法，如果Entity中有name字段，不妨可以在Repository 接口中新增 findBy<strong>Name</strong>方法，这样Spring Data会自动生成对应的实现。</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">IFooDAO</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JpaRepository</span>&lt;<span class="hljs-title">Foo</span>, <span class="hljs-title">Long</span>&gt; </span>&#123;
+    <span class="hljs-function">Foo <span class="hljs-title">findByName</span><span class="hljs-params">(String name)</span></span>;
+&#125;</code></pre>
+<p>更多自动化关键字可以查阅：<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-data/data-jpa/docs/current/reference/html/#jpa.query-methods.query-creation">https://docs.spring.io/spring-data/data-jpa/docs/current/reference/html/#jpa.query-methods.query-creation</a> </p>
+<h4 id="手动sql自定义查询"><a href="#手动sql自定义查询" class="headerlink" title="手动sql自定义查询"></a>手动sql自定义查询</h4><p>示例</p>
+<pre><code class="hljs java"><span class="hljs-meta">@Query(&quot;SELECT f FROM Foo f WHERE LOWER(f.name) = LOWER(:name)&quot;)</span>
+<span class="hljs-function">Foo <span class="hljs-title">retrieveByName</span><span class="hljs-params">(<span class="hljs-meta">@Param(&quot;name&quot;)</span> String name)</span></span>;</code></pre>
+
+<h2 id="未分类"><a href="#未分类" class="headerlink" title="未分类"></a>未分类</h2><h3 id="Modifying"><a href="#Modifying" class="headerlink" title="@Modifying"></a>@Modifying</h3><p>可在@Query上使用@Modifying注释，此时@Query可以执行查询以外的sql，如增、删、改。</p>
+<h3 id="Modifying-和-命名方法-操作的区别"><a href="#Modifying-和-命名方法-操作的区别" class="headerlink" title="@Modifying 和 命名方法 操作的区别"></a>@Modifying 和 命名方法 操作的区别</h3><p>后者会先把DB的数据全查出来，然后逐个做操作，这样可以通过AOP对每条数据设置前置操作。而前者会直接把操作语句扔到DB执行。</p>
+<h3 id="Modifying-与持久化容器的过期数据"><a href="#Modifying-与持久化容器的过期数据" class="headerlink" title="@Modifying 与持久化容器的过期数据"></a>@Modifying 与持久化容器的过期数据</h3><p>通过 @Modifying 执行的操作，不会同步给持久化容器，此时持久化容器的数据处于过期状态。一个方法是通过手动清空持久化容器。但也可以通过以下方式让其自动清空。</p>
+<pre><code class="hljs java"><span class="hljs-meta">@Modifying(clearAutomatically = true)</span></code></pre>
+
+<p>但如果清空持久化容器，则会导致未flush的数据也被清除，导致未保存的更改被丢弃。可以通过以下属性来在清空前flush。</p>
+<pre><code class="hljs java"><span class="hljs-meta">@Modifying(flushAutomatically = true)</span></code></pre>
+
+<h3 id="Query"><a href="#Query" class="headerlink" title="@Query"></a>@Query</h3><p>@Query的优先度优先于按方法名查询。</p>
+<p>@Query 优先使用JPQL语法，如果要使用原生SQL语法，需要指定native=ture。</p>
+<pre><code class="hljs java"><span class="hljs-comment">//JPQL语法</span>
+<span class="hljs-meta">@Query(&quot;SELECT u FROM User u WHERE u.status = 1&quot;)</span>
+<span class="hljs-function">Collection&lt;User&gt; <span class="hljs-title">findAllActiveUsers</span><span class="hljs-params">()</span></span>;
+
+<span class="hljs-comment">//原生SQL</span>
+<span class="hljs-meta">@Query(</span>
+<span class="hljs-meta">  value = &quot;SELECT * FROM USERS u WHERE u.status = 1&quot;, </span>
+<span class="hljs-meta">  nativeQuery = true)</span>
+<span class="hljs-function">Collection&lt;User&gt; <span class="hljs-title">findAllActiveUsersNative</span><span class="hljs-params">()</span></span>;</code></pre>
+
+<h3 id="连接持久层"><a href="#连接持久层" class="headerlink" title="连接持久层"></a>连接持久层</h3><p>至少需要：</p>
+<ol>
+<li>datasource，涉及和维护driver、username、password</li>
+<li>SqlSessionFactory，用来连接服务器，创建sqlSession</li>
+<li>mapper，定义相关的Query（在JPA中，一个方法就是一个mapper）</li>
+</ol>
+<p>图示：<br><img src="/images/Pasted%20image%2020201222154530.png"></p>
+<h4 id="JPA需要准备环境"><a href="#JPA需要准备环境" class="headerlink" title="JPA需要准备环境"></a>JPA需要准备环境</h4><p>对于JPA，是一回事。</p>
+<ol>
+<li>DataSource</li>
+<li>EntityManager —— 相当于SqlSessionFactory</li>
+<li>Entity Repository —— 相当于Mapper</li>
+</ol>
+<h4 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h4><p>需要注册Bean org.mybatis.spring.mapper.MapperScannerConfigurer 或者 注解 @MapperScanner，来生效mybatis。该bean负责整合上述的组件到DAO的代理类中，开发者就可以通过dao接口来操作db了。</p>
+</article><ul class="pager blog-pager"><li class="previous"><a href="/2021/11/26/Graphviz%E5%AE%9E%E8%B7%B5%E6%89%8B%E5%86%8C/" data-toggle="tooltip" data-placement="top" title="Graphviz实践手册">上一篇</a></li><li class="next"><a href="/2021/11/26/aop%E5%AE%9E%E8%B7%B5%E6%89%8B%E5%86%8C/" data-toggle="tooltip" data-placement="top" title="aop实践手册">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/xr08255920" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
+    <a target="_blank" rel="noopener" href="https://github.com/twoyao/beautiful-hexo">beautiful-hexo</a></span></p></div></div></div></footer><script src="//cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script><script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/js/main.js"></script><!-- 代码高亮--><!-- 导航栏搜索框--><script src="/js/search.js"></script><script type="text/javascript" id="local.search.active">var inputArea       = document.querySelector("#local-search-input");
+inputArea.onclick   = function(){ getSearchFile(); this.onclick = null }
+inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 切换标签彩蛋--><script src="/js/crash_cheat.js"> </script><!--看板娘--><script src="/live2d-widget/autoload.js"> </script></body></html>

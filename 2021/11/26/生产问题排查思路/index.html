@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="author" content="yejf"><link rel="icon" href="/avatar.jpg"><title>生产问题排查思路</title><meta name="description" content="Loneliness is not the same as loneliness, loneliness will panic, loneliness is full."><link rel="alternate" type="application/rss+xml" title="YeJF的篝火" href="/atom.xml"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/styles/kimbie-dark.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><meta name="generator" content="Hexo 5.4.0"></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class="container-fluid"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/" class="navbar-brand">YeJF的篝火</a></div><div id="main-navbar" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><form class="site-search-form"><i aria-hidden="true" class="fa fa-search icon"></i><input type="text" id="local-search-input" class="local-search-input-cls"></form><div id="local-search-result" class="local-search-result-cls"></div></li><li><a href="/archives">Archive</a></li><li><a href="https://xr08255920.github.io/">Github</a></li><li><a href="/about/">About</a></li><li><a href="/tags/">Tags</a></li></ul></div><div class="avatar-container"><div class="avatar-img-border"><a href="/"><img src="/avatar.jpg" class="avatar-img"></a></div></div></div></nav><header class="header-section"><div class="intro-header no-img"><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class="post-heading"><h1>生产问题排查思路</h1><p class="post-meta">Posted on 11月 26 2021<span class="post-meta-group"><span id="busuanzi_container_page_pv"> <span class="with-love"> <i class="fa fa-eye"> </i></span><span>阅读次数：</span><span id="busuanzi_value_page_pv"></span></span></span></p></div></div></div></div></div></header><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role="main" class="blog-post"><h3 id="做足监控"><a href="#做足监控" class="headerlink" title="做足监控"></a>做足监控</h3><p>Prometheus——监控工具<br>ELK——日志收集、展示套件<br>Micrometer——监控JVM</p>
+<h3 id="常见指标"><a href="#常见指标" class="headerlink" title="常见指标"></a>常见指标</h3><p>应用：业务日志、错误日志<br>JVM：GC、内存、类加载、线程<br>OS：硬盘、内存、cpu、网络<br>外部：专线带宽、交换机基本情况、网络延迟</p>
+<h3 id="定位工具"><a href="#定位工具" class="headerlink" title="定位工具"></a>定位工具</h3><table>
+<thead>
+<tr>
+<th>目标</th>
+<th>工具</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cpu</td>
+<td>top、vmstat、pidstat、ps</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>free、top、ps、vmstat、cachestat、sar</td>
+</tr>
+<tr>
+<td>IO</td>
+<td>lsof、iostat、pidstat、sar、iotop、df、du</td>
+</tr>
+<tr>
+<td>网络</td>
+<td>ifconfig、ip、nslookup、dig、ping、tcpdump、iptables</td>
+</tr>
+</tbody></table>
+<h3 id="实践案例"><a href="#实践案例" class="headerlink" title="实践案例"></a>实践案例</h3><ol>
+<li>top + jstack，分析阻塞线程</li>
+<li>压测+Jprofiler，分析热点函数</li>
+<li>查看gclog，分析gc情况</li>
+<li>netstat 检查外调连接数量，大量tcp堆积说明调用某个服务有问题，tcpdump、wireshark 分析外调的详细信息</li>
+<li>观察曲线指标，达到水平线上说明资源瓶颈</li>
+<li>jmap + jhat + jvisualvm ，导出+分析堆内存快照</li>
+<li>jconsole 监控jvm基础资源使用状况</li>
+</ol>
+<hr>
+<h4 id="top-jstack，分析阻塞线程"><a href="#top-jstack，分析阻塞线程" class="headerlink" title="top + jstack，分析阻塞线程"></a>top + jstack，分析阻塞线程</h4><pre><code class="hljs shell">top -Hp $pid #获取$pid对应的所有线程
+p #按cpu消耗排序
+
+jstack -l $pid  #获取进程对应的所有线程栈快照</code></pre>
+
+<h4 id="查看gclog，分析gc情况"><a href="#查看gclog，分析gc情况" class="headerlink" title="查看gclog，分析gc情况"></a>查看gclog，分析gc情况</h4><p>可以使用ps获取gcLog的位置，如果是GC压力，说明内存使用不正常，从而进一步跟踪内存快照，排查内存情况</p>
+<pre><code class="hljs shell">ps -ef|grep bootstrap|grep gc</code></pre>
+
+</article><ul class="pager blog-pager"><li class="previous"><a href="/2021/11/26/%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E6%9F%A5%E8%AF%A2%E6%89%8B%E5%86%8C/" data-toggle="tooltip" data-placement="top" title="执行计划查询手册">上一篇</a></li><li class="next"><a href="/2021/11/26/%E7%BC%96%E7%A0%81%E6%8E%A2%E7%A9%B6/" data-toggle="tooltip" data-placement="top" title="编码探究">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/xr08255920" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
+    <a target="_blank" rel="noopener" href="https://github.com/twoyao/beautiful-hexo">beautiful-hexo</a></span></p></div></div></div></footer><script src="//cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script><script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/js/main.js"></script><!-- 代码高亮--><!-- 导航栏搜索框--><script src="/js/search.js"></script><script type="text/javascript" id="local.search.active">var inputArea       = document.querySelector("#local-search-input");
+inputArea.onclick   = function(){ getSearchFile(); this.onclick = null }
+inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 切换标签彩蛋--><script src="/js/crash_cheat.js"> </script><!--看板娘--><script src="/live2d-widget/autoload.js"> </script></body></html>

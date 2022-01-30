@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="author" content="yejf"><link rel="icon" href="/avatar.jpg"><title>c++学习</title><meta name="description" content="Loneliness is not the same as loneliness, loneliness will panic, loneliness is full."><link rel="alternate" type="application/rss+xml" title="YeJF的篝火" href="/atom.xml"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/styles/kimbie-dark.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><meta name="generator" content="Hexo 5.4.0"></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class="container-fluid"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/" class="navbar-brand">YeJF的篝火</a></div><div id="main-navbar" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><form class="site-search-form"><i aria-hidden="true" class="fa fa-search icon"></i><input type="text" id="local-search-input" class="local-search-input-cls"></form><div id="local-search-result" class="local-search-result-cls"></div></li><li><a href="/archives">Archive</a></li><li><a href="https://xr08255920.github.io/">Github</a></li><li><a href="/about/">About</a></li><li><a href="/tags/">Tags</a></li></ul></div><div class="avatar-container"><div class="avatar-img-border"><a href="/"><img src="/avatar.jpg" class="avatar-img"></a></div></div></div></nav><header class="header-section"><div class="intro-header no-img"><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class="post-heading"><h1>c++学习</h1><p class="post-meta">Posted on 11月 18 2021<span class="post-meta-group"><span id="busuanzi_container_page_pv"> <span class="with-love"> <i class="fa fa-eye"> </i></span><span>阅读次数：</span><span id="busuanzi_value_page_pv"></span></span></span><span class="post-meta-group"><span class="with-love"> <i class="fa fa-tag"></i></span> · <a href="/tags/c/" class="tag post-meta">c++</a></span></p></div></div></div></div></div></header><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role="main" class="blog-post"><h1 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h1><h2 id="书籍"><a href="#书籍" class="headerlink" title="书籍"></a>书籍</h2><ul>
+<li>&lt;c++ primer plus&gt;</li>
+</ul>
+<h2 id="视频"><a href="#视频" class="headerlink" title="视频"></a>视频</h2><p>【零基础学C++】老九零基础学编程系列之C++<br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV12x411D7xr?p=102">https://www.bilibili.com/video/BV12x411D7xr?p=102</a></p>
+<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="windows环境"><a href="#windows环境" class="headerlink" title="windows环境"></a>windows环境</h2><h3 id="hello-world"><a href="#hello-world" class="headerlink" title="hello world"></a>hello world</h3><ol>
+<li>安装cygwin</li>
+<li>cygwin安装g++</li>
+<li>编写hello world.cpp文件</li>
+<li>使用g++编译第一个 hello world 文件</li>
+</ol>
+<h2 id="关键知识点实践"><a href="#关键知识点实践" class="headerlink" title="关键知识点实践"></a>关键知识点实践</h2><ul>
+<li>编写 sizeof(struct) ，观察struct 的内存占用<ul>
+<li>sizeof(数组) ，输出的是数组占用内存</li>
+<li>输出数组长度</li>
+</ul>
+</li>
+<li>使用sort(arr)排序，需要引入 &lt;algroithm&gt; 包</li>
+<li>指针需要习惯赋初值：0</li>
+<li>指针动态分配内存：<code>int* num = new int[5]</code><ul>
+<li>记得手动释放：<code>delete[] num</code></li>
+</ul>
+</li>
+<li>函数传递指针、引用作为参数</li>
+<li>函数传递函数指针作为参数</li>
+<li>数组作为函数入参，内容容易被修改，若不能被改，入参定义前可加<code>const</code></li>
+</ul>
+<h3 id="自定义函数"><a href="#自定义函数" class="headerlink" title="自定义函数"></a>自定义函数</h3><ol>
+<li>函数原型（可省略参数名，调用前必须先写原型</li>
+<li>函数定义（逻辑实现</li>
+<li>返回值类型不能是数组，参数可以</li>
+</ol>
+<h3 id="函数指针"><a href="#函数指针" class="headerlink" title="函数指针"></a>函数指针</h3><p>声明:</p>
+<pre><code class="hljs c++"><span class="hljs-comment">//函数原型</span>
+<span class="hljs-function"><span class="hljs-keyword">double</span> <span class="hljs-title">sum</span><span class="hljs-params">(<span class="hljs-keyword">double</span>,<span class="hljs-keyword">double</span>)</span></span>;
+<span class="hljs-comment">//函数指针类型声明</span>
+<span class="hljs-function"><span class="hljs-keyword">typedef</span> <span class="hljs-title">double</span> <span class="hljs-params">(*ptrSum)</span><span class="hljs-params">(<span class="hljs-keyword">double</span>,<span class="hljs-keyword">double</span>)</span></span>; <span class="hljs-comment">//此时ptrSum表示类型</span>
+<span class="hljs-comment">//函数指针变量声明</span>
+<span class="hljs-built_in"><span class="hljs-keyword">double</span></span> (*ptrSum)(<span class="hljs-keyword">double</span>,<span class="hljs-keyword">double</span>); <span class="hljs-comment">//此时ptrSum表示变量名</span>
+<span class="hljs-comment">//函数指针赋值</span>
+ptrSum = sum;
+<span class="hljs-comment">//函数原型中，入参类型声明为：（函数指针类型，数1，数2)</span>
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">print_result</span><span class="hljs-params">(<span class="hljs-keyword">double</span> (*)(<span class="hljs-keyword">double</span>,<span class="hljs-keyword">double</span>),<span class="hljs-keyword">double</span>,<span class="hljs-keyword">double</span>)</span></span>;</code></pre>
+<h2 id="关键概念理清"><a href="#关键概念理清" class="headerlink" title="关键概念理清"></a>关键概念理清</h2><ul>
+<li># 开头的<strong>都</strong>是<strong>预处理</strong>指令，就是编译之前编译器的预操作</li>
+<li>运算符重载，应用：迭代器 iterator++、指针++(与前面一回事)</li>
+<li>数组名就是数组的首<strong>地址</strong>，所以定义指针时，数组名前不用加&amp;<pre><code class="hljs c++"><span class="hljs-keyword">double</span> score[] &#123;<span class="hljs-number">1.1</span>, <span class="hljs-number">1.2</span>, <span class="hljs-number">22.3</span>&#125;;
+<span class="hljs-keyword">double</span> * ptr_score = score;
+<span class="hljs-comment">//typeof score = double[]</span>
+<span class="hljs-comment">//typeof ptr_score = 指针&lt;T&gt;</span></code></pre></li>
+<li>指针类型（地址）++，只会指向新地址，+的是类型长度</li>
+<li>普通变量赋值：开辟新区域，变量重新指向，指针赋值：在指针区域直接赋值，引用变量的赋值：引用区域直接赋值（本质是指针）</li>
+<li>endl 和 \n 的区别：endl带flush</li>
+<li>动态数组vector，使用：<ul>
+<li>可见iterator是一个数组指针，arr.begin()是数组头地址，arr.end()同理<pre><code class="hljs c++">vector&lt;<span class="hljs-keyword">int</span>&gt; arr &#123;<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>&#125;;
+vector&lt;<span class="hljs-keyword">int</span>&gt;::iterator it;
+it = arr.<span class="hljs-built_in">begin</span>();
+<span class="hljs-keyword">while</span>(it != arr.<span class="hljs-built_in">end</span>())&#123;
+	it++;
+	cout &lt;&lt; *it &lt;&lt; endl;
+&#125;</code></pre></li>
+</ul>
+</li>
+<li>void* 指针，可以存任意对象地址，但无法赋值，只能作对比用</li>
+<li>指针变量(<em>p++)的优先级是(</em>(p++))，先运算再寻址</li>
+</ul>
+<h2 id="与java的差异点"><a href="#与java的差异点" class="headerlink" title="与java的差异点"></a>与java的差异点</h2><ul>
+<li>数组初始化不需要加 = 号<pre><code class="hljs c++"><span class="hljs-keyword">int</span> array[] &#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>&#125;;</code></pre></li>
+</ul>
+<h2 id="概念图"><a href="#概念图" class="headerlink" title="概念图"></a>概念图</h2><h3 id="编译过程"><a href="#编译过程" class="headerlink" title="编译过程"></a>编译过程</h3><p><img src="/images/img/Pasted%20image%2020201114230333.png"></p>
+</article><ul class="pager blog-pager"><li class="previous"><a href="/2021/11/24/hexo%E7%BB%8F%E9%AA%8C/" data-toggle="tooltip" data-placement="top" title="hexo经验">上一篇</a></li><li class="next"><a href="/2021/11/17/hexo%E5%AE%9E%E8%B7%B5/" data-toggle="tooltip" data-placement="top" title="hexo实践">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/xr08255920" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
+    <a target="_blank" rel="noopener" href="https://github.com/twoyao/beautiful-hexo">beautiful-hexo</a></span></p></div></div></div></footer><script src="//cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script><script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/js/main.js"></script><!-- 代码高亮--><!-- 导航栏搜索框--><script src="/js/search.js"></script><script type="text/javascript" id="local.search.active">var inputArea       = document.querySelector("#local-search-input");
+inputArea.onclick   = function(){ getSearchFile(); this.onclick = null }
+inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 切换标签彩蛋--><script src="/js/crash_cheat.js"> </script><!--看板娘--><script src="/live2d-widget/autoload.js"> </script></body></html>
