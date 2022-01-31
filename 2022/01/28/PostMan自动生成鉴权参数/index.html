@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="author" content="yejf"><link rel="icon" href="/avatar.jpg"><title>PostMan自动生成鉴权参数</title><meta name="description" content="Loneliness is not the same as loneliness, loneliness will panic, loneliness is full."><link rel="alternate" type="application/rss+xml" title="YeJF的篝火" href="/atom.xml"><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4.5.0/css/font-awesome.min.css"><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/styles/kimbie-dark.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><script src="https://hm.baidu.com/hm.js?3ff1b36ec1db8f13ab171ad6262f0cc6"> </script><meta name="generator" content="Hexo 5.4.0"></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class="container-fluid"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/" class="navbar-brand">YeJF的篝火</a></div><div id="main-navbar" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><form class="site-search-form"><i aria-hidden="true" class="fa fa-search icon"></i><input type="text" id="local-search-input" class="local-search-input-cls"></form><div id="local-search-result" class="local-search-result-cls"></div></li><li><a href="/archives">Archive</a></li><li><a href="https://xr08255920.github.io/">Github</a></li><li><a href="/about/">About</a></li><li><a href="/tags/">Tags</a></li></ul></div><div class="avatar-container"><div class="avatar-img-border"><a href="/"><img src="/avatar.jpg" class="avatar-img"></a></div></div></div></nav><header class="header-section"><div class="intro-header no-img"><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class="post-heading"><h1>PostMan自动生成鉴权参数</h1><p class="post-meta">Posted on 1月 28 2022<span class="post-meta-group"><span id="busuanzi_container_page_pv"> <span class="with-love"> <i class="fa fa-eye"> </i></span><span>阅读次数：</span><span id="busuanzi_value_page_pv"></span></span></span><span class="post-meta-group"><span class="with-love"> <i class="fa fa-tag"></i></span> · <a href="/tags/PostMan/" class="tag post-meta">PostMan</a> · <a href="/tags/%E6%B5%8B%E8%AF%95/" class="tag post-meta">测试</a></span></p></div></div></div></div></div></header><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role="main" class="blog-post"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>工具版本：</p>
+<ul>
+<li>PostMan: 8.0.7</li>
+<li>Crypto-js: 3.1.9</li>
+</ul>
+<p>我们通常联调的时候，有可能会需要协商好密钥，用于在API调用时加签和验签。由于签名是基于请求体和请求头动态生成的，postman预置静态参数的方式根本不能满足我们对效率的追求，然后我就捣鼓了一下用postman为每个请求动态生成鉴权参数，以此文章来记录过程中的经验心得。</p>
+<p>postman中有个选项页叫做<code>Pre-request script</code>，顾名思义，它可以在请求前执行该脚本。它本质上就是个js脚本，而我们主要就是要在这里编写脚本生成所需数据。</p>
+<h2 id="零、预研"><a href="#零、预研" class="headerlink" title="零、预研"></a>零、预研</h2><p>调查了一下找到了JS里好评率较高的密钥库<a target="_blank" rel="noopener" href="https://github.com/brix/crypto-js">Crypto-js</a>，随便谷歌一个好用的CDN地址，我这里使用的是jsdelivr的源（jsdelivr真的太香了）。为了验证它好不好使，我习惯先用交互式编程研究下它的用法（使用ipython留下的习惯），最好的JS交互式界面当然就是Chrome了。</p>
+<p>打开Chrome控制台，输入命令，引入密钥库。</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> script = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&quot;script&quot;</span>);
+script.src = <span class="hljs-string">&quot;https://cdn.jsdelivr.net/npm/crypto-js@3.1.9-1/crypto-js.js&quot;</span>
+<span class="hljs-built_in">document</span>.getElementsByTagName(<span class="hljs-string">&quot;head&quot;</span>)[<span class="hljs-number">0</span>].appendChild(script);</code></pre>
+
+<p>简单找下，很容易找到它的主类是<code>CryptoJS</code></p>
+<p>我这里需要用到密钥库里的HmacSHA256、Base64两个工具，通过摸索它的API，很快了解了用法。</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> key = foo
+<span class="hljs-keyword">var</span> message = bar
+<span class="hljs-keyword">var</span> sign = CryptoJS.HmacSHA256(<span class="hljs-string">&quot;foo&quot;</span>,<span class="hljs-string">&#x27;bar&#x27;</span>)
+<span class="hljs-keyword">var</span> signenc = CryptoJS.enc.Base64.stringify(sign)</code></pre>
+
+<pre><code>此处要注意一个大坑，由于CryptoJS生成的Sign是特别的数据结构，而不是纯粹的二进制，所以用chrome自带的base64工具（btoa、atob）是无法得到正确的编码的，总之别人工具库都给你准备好了那就直接用工具库里的Base64吧。
+</code></pre>
+<p>然后用得到的签名跟服务器生成的签名作比对，或者直接调用API验证，验证成功，至此前期工作已经准备好。</p>
+<h2 id="一、引入密钥库"><a href="#一、引入密钥库" class="headerlink" title="一、引入密钥库"></a>一、引入密钥库</h2><p>打开PostMan的 <code>Pre-request script</code> 界面，编写脚本，在脚本初始化阶段引入密钥库。</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(!pm.globals.has(<span class="hljs-string">&quot;cryptojs&quot;</span>))&#123;
+ pm.sendRequest(<span class="hljs-string">&quot;https://cdn.jsdelivr.net/npm/crypto-js@3.1.9-1/crypto-js.js&quot;</span>, <span class="hljs-function">(<span class="hljs-params">err, 	res</span>) =&gt;</span> &#123;
+ <span class="hljs-keyword">if</span> (!err) &#123;
+ pm.globals.set(<span class="hljs-string">&quot;cryptojs&quot;</span>, res.text())
+ &#125;
+&#125;)&#125;
+
+<span class="hljs-built_in">eval</span>(pm.globals.get(<span class="hljs-string">&quot;cryptojs&quot;</span>));</code></pre>
+
+
+<h2 id="二、构造鉴权数据"><a href="#二、构造鉴权数据" class="headerlink" title="二、构造鉴权数据"></a>二、构造鉴权数据</h2><p>先确定构造数据所需的关键元素，参考对接文档，用注释把步骤大致整理出来</p>
+<pre><code class="hljs javascript"><span class="hljs-comment">// plaintext = httpmethod + RequestURI + http body</span>
+<span class="hljs-comment">// key=AppSecret + Nonce + timestamp</span>
+<span class="hljs-comment">// token=BASE64(HMAC_SHA256(plaintext, key))</span></code></pre>
+
+<p>然后对着注释把代码补全</p>
+<blockquote>
+<p>有条件的都建议使用新版客户端，不建议用chrome插件。客户端会在编写脚本的时候有智能代码提醒，很方便。</p>
+</blockquote>
+<pre><code>1. 获取请求头使用 pm.request.headers
+2. 获取body使用 pm.request.url.getPath(true)，加true是指不按&#39;/&#39;切割路径
+</code></pre>
+<pre><code class="hljs javascript"><span class="hljs-comment">// let plaintext = httpmethod+RequestURI+http body</span>
+
+<span class="hljs-keyword">let</span> plaintext = <span class="hljs-string">&#x27;POST&#x27;</span>+pm.request.url.getPath(<span class="hljs-literal">true</span>)+pm.request.body.raw;
+
+<span class="hljs-comment">// key=AppSecret(主题服务器分配)+Nonce+timestamp</span>
+
+<span class="hljs-keyword">let</span> appSecret = <span class="hljs-string">&#x27;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#x27;</span>;
+
+<span class="hljs-keyword">let</span> key = appSecret+pm.request.headers.get(<span class="hljs-string">&quot;nonce&quot;</span>)+pm.request.headers.get(<span class="hljs-string">&quot;timestamp&quot;</span>);
+
+<span class="hljs-comment">// token=BASE64(HMAC_SHA256(plaintext, key))</span>
+
+<span class="hljs-keyword">let</span> sign = CryptoJS.HmacSHA256(plaintext,key);
+
+<span class="hljs-keyword">let</span> signenc = CryptoJS.enc.Base64.stringify(sign);
+
+pm.collectionVariables.set(<span class="hljs-string">&quot;usertoken&quot;</span>, signenc);</code></pre>
+
+<p>最后把构造好的<code>token</code>设置到环境变量中：<code>pm.collectionVariables.set(&quot;usertoken&quot;, signenc);</code></p>
+<h2 id="三、引用鉴权参数"><a href="#三、引用鉴权参数" class="headerlink" title="三、引用鉴权参数"></a>三、引用鉴权参数</h2><p>在请求用例的Header中，就可以用PostMan的匹配字符来引用上一步放置到环境变量中的数据了。<br>![[Pasted image 20220128154749.png]]</p>
+<p>之后就可以点击请求按钮验证结果了，此时无论我怎样的修改请求体，修改timestamp，都可以自行动态生成token了，舒畅~。</p>
+</article><ul class="pager blog-pager"><li class="next"><a href="/2022/01/22/%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E4%B8%8E%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE/" data-toggle="tooltip" data-placement="top" title="数字证书与安全协议">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/xr08255920" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
+    <a target="_blank" rel="noopener" href="https://github.com/twoyao/beautiful-hexo">beautiful-hexo</a></span></p></div></div></div></footer><script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script><script src="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script><script src="/js/main.js"></script><!-- 代码高亮--><!-- 导航栏搜索框--><script src="/js/search.js"></script><script type="text/javascript" id="local.search.active">var inputArea       = document.querySelector("#local-search-input");
+inputArea.onclick   = function(){ getSearchFile(); this.onclick = null }
+inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 切换标签彩蛋--><script src="/js/crash_cheat.js"> </script><!--看板娘--><script src="/live2d-widget/autoload.js"> </script></body></html>

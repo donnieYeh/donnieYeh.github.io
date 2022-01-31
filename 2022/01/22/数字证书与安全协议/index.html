@@ -24,7 +24,10 @@
 <p>由上图的信任链我们可以看出验证操作会一直递归到根证书。这里的关键就在于根证书是内置于我们操作系统本地的，那么在获取根证书的时候就不想要经过网络。若不经过网络，则就不存在被中间人攻击的风险。所以，到根证书为止，就可以证明整个信任链是可信的了。</p>
 <h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>加密技术的存在是为了保障通信信息不被第三方窃取，保证信息的安全性，该技术甚至可以追溯到3900年前的古希腊。但是随着互联网尤其是无线网络的发展，出现了一种新的场景，就是通信双方节点，通常都是需要临时交换密钥来进行安全通信。伴随着这种场景，新的攻击手段也应运而生，那就是中间人攻击，简单来说就是中间人可以伪装成你的通信对象，交换非法秘钥，以达到监听窃取、篡改信息的目的。</p>
 <p>而<strong>数字证书</strong>就是为了解决<strong>信任危机</strong>而的产生。<br>目前大部分数字证书都采用 x509第三版数据结构<br>数字证书是实现<strong>安全协议</strong>过程的基石。</p>
-<h2 id="安全协议"><a href="#安全协议" class="headerlink" title="安全协议"></a>安全协议</h2><h3 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h3><h4 id="TLS属于哪层协议？"><a href="#TLS属于哪层协议？" class="headerlink" title="TLS属于哪层协议？"></a>TLS属于哪层协议？</h4><p>TLS所处的协议层如下：<br>数据帧{ IP层{ TCP层{ <strong>TLS层{</strong> 应用层{} <strong>}</strong> } } }</p>
+<h4 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h4><p>为什么要有中间证书？<br>1.根证书的私钥安全性隔离<br>A.降低替换私钥成本<br>B.降低暴露私钥风险<br>2.根证书的操作效率无法满足要求</p>
+<p>浏览器如何获取中间证书？<br>一般来说，服务器会将中间证书一并发送过来。也就是说，当我们访问某个网站时，收到的不是一个证书，而是一系列证书。<br>当然，这不是强制要求，在服务器不发送的情况下，浏览器也会使用一些方法去定位中间证书，比如缓存之前下载过的证书<br>证书文件中的 Authority Information Access (AIA) Extension 里面含有上级证书的相关信息，浏览器可以使用这个信息去下载上级证书</p>
+<h3 id="PKI-Public-Key-Infrastructure-体系"><a href="#PKI-Public-Key-Infrastructure-体系" class="headerlink" title="PKI(Public Key Infrastructure)体系"></a>PKI(Public Key Infrastructure)体系</h3><p>当我们掌握了证书的理论性知识后。需要有一套完整的创建, 管理, 分发, 使用, 存储 和 吊销 证书的体系，这就是PKI体系。该体系里完整的囊括了所需的指导性工具，包括规则、策略、相关软硬件、和流程。该体系并不由某一家制定，而是互联网组织共同参与，其中做出过贡献的组织包括但不限于 ITU-T（X.500~X.599系列）、IETF、RSA实验室（RSA Security，PKCS系列）、ISO。综上所述，PKI可以认为是一系列的规范和标准。而为了实现安全基础服务目的的技术都可称为PKI。## 安全协议</p>
+<h3 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h3><h4 id="TLS属于哪层协议？"><a href="#TLS属于哪层协议？" class="headerlink" title="TLS属于哪层协议？"></a>TLS属于哪层协议？</h4><p>TLS所处的协议层如下：<br>数据帧{ IP层{ TCP层{ <strong>TLS层{</strong> 应用层{} <strong>}</strong> } } }</p>
 <p>可见TLS介于传输层（TCP）和应用层之间。</p>
 <p>如果把网络协议想象成一个纸团，协议之间的嵌套就像一张纸包住另一个纸团一样。最里面的一层就是应用层协议，如HTTP。而网络报文的传输过程中，任何人能够截获这个纸团，并层层剥开，但是如果没有相应的秘钥，是没法剥开TLS这一层的，也就没法看到里面的HTTP报文。<br><img src="/images/Pasted%20image%2020220123093321.png"></p>
 <h4 id="SSL和TLS的关系"><a href="#SSL和TLS的关系" class="headerlink" title="SSL和TLS的关系"></a>SSL和TLS的关系</h4><p>SSL是网景制定的，TLS是IETF指定的。TLS1.0建立在SSL3.0基础之上，可以理解为SSL3.1。由于习惯原因，现在很多对安全层依旧沿用SSL的称呼，但实际上已经使用的是TLS的技术了。</p>
@@ -38,6 +41,32 @@
 </ul>
 <h4 id="交换秘钥过程"><a href="#交换秘钥过程" class="headerlink" title="交换秘钥过程"></a>交换秘钥过程</h4><p>HTTPS常用的密钥交换算法有两种，分别是<code>RSA</code>和<code>ECDHE</code><br>由于RSA不具备向前安全性质，现在大部分服务器不会使用它来交换秘钥<br>每个通信过程的秘钥没有关系，相互独立，才能保证 <strong>「前向安全」</strong>。<br><code>DH</code>作为<code>ECDHE</code>的基础，详细介绍参考[DH]一节<br><code>ECDHE</code>的演进路线基本是这样的：<code>DH</code>-&gt; <code>DHE</code>-&gt;<code>ECDHE</code>，</p>
 <h4 id="向前安全性"><a href="#向前安全性" class="headerlink" title="向前安全性"></a>向前安全性</h4><p><strong>前向安全性</strong>或<strong>前向</strong>保密<strong>性</strong>（英语：Forward Secrecy，缩写：FS），有时也被称为完美<strong>前向安全</strong>（英语：Perfect Forward Secrecy，缩写：PFS），<strong>是</strong>密码学中通讯协议的<strong>安全</strong>属性，指的<strong>是</strong>长期使用的主密钥泄漏不会导致过去的会话密钥泄漏。</p>
+<h3 id="两种密钥交换模式"><a href="#两种密钥交换模式" class="headerlink" title="两种密钥交换模式"></a>两种密钥交换模式</h3><h4 id="RSA-Base"><a href="#RSA-Base" class="headerlink" title="RSA Base"></a>RSA Base</h4><p>流程<br>从浏览器请求HTTPS，到渲染数据的整个过程</p>
+<ul>
+<li>Client Hello</li>
+<li>随机数、算法套件</li>
+<li>Server Hello</li>
+<li>随机数、选定算法、公钥</li>
+<li>Certificate</li>
+<li>验证身份的项目：</li>
+<li>涉及证书链的有效期</li>
+<li>涉及证书链的签名</li>
+</ul>
+<p> 举例子，证书验证不通过的情况<br> <img src="/images/Pasted%20image%2020220123121951.png"></p>
+<ul>
+<li>Server Hello Done</li>
+<li>Client Key Exchange, Change Cipher Spec, Encrypted Handshake Message</li>
+<li>服务端 Change Cipher Spec, Encrypted Handshake Message</li>
+<li>加密通信</li>
+</ul>
+<p>premaster key、masterKey的作用<br><img src="/images/Pasted%20image%2020220123122022.png"></p>
+<h4 id="DH-Base"><a href="#DH-Base" class="headerlink" title="DH Base"></a>DH Base</h4><h5 id="DH算法"><a href="#DH算法" class="headerlink" title="DH算法"></a>DH算法</h5><p>DH算法的原理可以参考这一篇文章：<a target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/detail/273779">为了搞懂 HTTPS，我把大学的数学书拿了出来。。。)</a></p>
+<h5 id="小结-1"><a href="#小结-1" class="headerlink" title="小结"></a>小结</h5><p>要注意dh算法本身并不能防范中间人攻击，中间人可以通过分别对双方进行DH密钥交换进行攻击，所以DH实际需要配合身份认证机制才能安全工作。DH两种工作方式：</p>
+<ol>
+<li>Fixed Diffie-Hellman：直接把DH公钥固化到服务方证书里，和RSA一样不具备向前安全性</li>
+<li>Ephemeral Diffie-Hellman (简称为DHE)：服务方使用动态DH公钥，只是会对公钥进行签名</li>
+</ol>
+<p>在DH模式中，数字证书，不是用于生成通信用的秘钥，而是单纯用于双方认证身份（这个是大部分人很容易理解错的地方）</p>
 <h4 id="演进过程-1"><a href="#演进过程-1" class="headerlink" title="演进过程"></a>演进过程</h4><p>以下过程基于网络交换秘钥场景</p>
 <table>
 <thead>
@@ -71,78 +100,54 @@
 <td>x</td>
 </tr>
 <tr>
-<td>非对称{密钥}+公钥背书</td>
+<td>非对称{密钥}+公钥认证</td>
 <td>√</td>
 <td>√</td>
 <td>√</td>
 <td>x</td>
 </tr>
 <tr>
-<td>非对称{临时DH公钥}+公钥背书</td>
+<td>临时DH公钥+公钥认证</td>
 <td>√</td>
 <td>√</td>
 <td>√</td>
 <td>√</td>
 </tr>
 </tbody></table>
-<h3 id="两种密钥交换模式"><a href="#两种密钥交换模式" class="headerlink" title="两种密钥交换模式"></a>两种密钥交换模式</h3><h4 id="RSA-Base"><a href="#RSA-Base" class="headerlink" title="RSA Base"></a>RSA Base</h4><p>流程<br>从浏览器请求HTTPS，到渲染数据的整个过程</p>
-<ul>
-<li>Client Hello</li>
-<li>随机数、算法套件</li>
-<li>Server Hello</li>
-<li>随机数、选定算法、公钥</li>
-<li>Certificate</li>
-<li>验证身份的项目：</li>
-<li>涉及证书链的有效期</li>
-<li>涉及证书链的签名</li>
-</ul>
-<p> 举例子，证书验证不通过的情况<br> <img src="/images/Pasted%20image%2020220123121951.png"></p>
-<ul>
-<li>Server Hello Done</li>
-<li>Client Key Exchange, Change Cipher Spec, Encrypted Handshake Message</li>
-<li>服务端 Change Cipher Spec, Encrypted Handshake Message</li>
-<li>加密通信</li>
-</ul>
-<p>premaster key、masterKey的作用<br><img src="/images/Pasted%20image%2020220123122022.png"></p>
-<h4 id="DH-Base"><a href="#DH-Base" class="headerlink" title="DH Base"></a>DH Base</h4><h5 id="DH算法"><a href="#DH算法" class="headerlink" title="DH算法"></a>DH算法</h5><p>DH算法的原理可以参考这一篇文章：<a target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/detail/273779">为了搞懂 HTTPS，我把大学的数学书拿了出来。。。)</a></p>
-<h5 id="小结-1"><a href="#小结-1" class="headerlink" title="小结"></a>小结</h5><p>要注意dh算法本身并不能防范中间人攻击，中间人可以通过分别对双方进行DH密钥交换进行攻击，所以DH实际需要配合身份认证机制才能安全工作。DH两种工作方式：</p>
-<ol>
-<li>Fixed Diffie-Hellman：直接把DH公钥固化到服务方证书里，和RSA一样不具备向前安全性</li>
-<li>Ephemeral Diffie-Hellman (简称为DHE)：服务方使用动态DH公钥，只是会对公钥进行签名</li>
-</ol>
-<p>在DH模式中，数字证书，不是用于生成通信用的秘钥，而是单纯用于双方认证身份（这个是大部分人很容易理解错的地方）</p>
+<h3 id="TLS1-3介绍"><a href="#TLS1-3介绍" class="headerlink" title="TLS1.3介绍"></a>TLS1.3介绍</h3><p>TLS 1.3 是时隔九年对 TLS 1.2 等之前版本的新升级，也是迄今为止改动最大的一次。针对目前已知的安全威胁，IETF（Internet Engineering Task Force，互联网工程任务组） 正在制定 TLS 1.3 的新标准，使其有望成为有史以来最安全，但也最复杂的 TLS 协议。<br>![[Pasted image 20220112144654.png]]</p>
+<p>v1.3 优点：<br>1.握手只需要 1TTR，性能更好<br>2.只支持向前安全的算法，安全性更高</p>
 <h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p>相关配置</p>
 <ul>
 <li>internet属性<br>如何查看一个网站使用的TLS版本：f12-&gt;security<br><img src="/images/Pasted%20image%2020220123122235.png"></li>
 </ul>
-<h4 id="证书的生命周期管理"><a href="#证书的生命周期管理" class="headerlink" title="证书的生命周期管理"></a>证书的生命周期管理</h4><p>流行的证书生命周期管理工具有两种，一个是jdk自带的keytool；一个是开源项目openSSL</p>
+<h4 id="证书主要生命周期"><a href="#证书主要生命周期" class="headerlink" title="证书主要生命周期"></a>证书主要生命周期</h4><p>常见的证书管理工具有两种，一个是jdk自带的keytool；一个是开源项目openssl<br>以下命令均可以加上 –help 查看帮助，示例：<code>keytool –genkeypair -help</code></p>
 <table>
 <thead>
 <tr>
-<th>生命周期</th>
-<th>keytool相关命令</th>
-<th>openssl相关命令</th>
+<th>阶段</th>
+<th>Keytool相关命令</th>
+<th>Openssl相关命令</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>创建密钥对</td>
+<td>生成密钥对</td>
 <td>-genkeypair</td>
 <td>genrsa</td>
 </tr>
 <tr>
-<td>创建签名请求</td>
+<td>生成证书请求</td>
 <td>-certreq</td>
 <td>req</td>
 </tr>
 <tr>
 <td>签发证书</td>
 <td>-gencert</td>
-<td>x509</td>
+<td>X509</td>
 </tr>
 <tr>
-<td>秘钥库管理</td>
-<td>-importcert、-list</td>
-<td>pkcs12</td>
+<td>管理密钥库</td>
+<td>-list, -importkeystore</td>
+<td>pkcs12 -nodes -nocerts</td>
 </tr>
 <tr>
 <td>使用证书</td>
@@ -150,14 +155,78 @@
 <td></td>
 </tr>
 <tr>
-<td>销毁证书</td>
+<td>吊销</td>
 <td></td>
 <td></td>
 </tr>
 </tbody></table>
+<h5 id="keytool实践"><a href="#keytool实践" class="headerlink" title="keytool实践"></a>keytool实践</h5><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 生成根证书，存储到密钥库caroot.ks</span>
+keytool -genkeypair -alias caroot -keyalg RSA -keystore caroot.ks -storepass aaaaaa
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 根据提示，把密钥库转换成pkcs12</span>
+keytool -importkeystore -srckeystore caroot.ks -destkeystore caroot.p12 -deststoretype pkcs12
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 这里我们可以把keytool命令做个别名，方便调用（可选）</span>
+alias mykt=&#x27;keytool -keystore $ksfile -storepass $kspass $*&#x27;
+export ksfile=caroot.p12 &amp;&amp; export kspass=aaaaaa
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 生成服务证书，存储到密钥库server.p12</span>
+keytool -genkeypair -alias server -keyalg rsa -keysize 1024 -keystore server.p12 -storepass aaaaaa -storetype pkcs12
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 生成服务证书签名申请</span>
+keytool -certreq -alias server -file server.csr -storepass aaaaaa -keystore server.p12
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 使用ca根证书签发服务证书</span>
+keytool -gencert -infile server.csr -outfile server.crt -alias caroot -keystore caroot.p12 -storepass aaaaaa -ext san=dns:www.mycompany.com,dns:mycompany.com
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 此时我们发现ca签发的证书不可信，导出根证书并安装到本地即可解决</span>
+keytool -exportcert -alias caroot -file caroot.crt -keystore caroot.p12 -storepass aaaaaa
+</code></pre>
+
+
 <h4 id="验证der编码和base64编码的区别"><a href="#验证der编码和base64编码的区别" class="headerlink" title="验证der编码和base64编码的区别"></a>验证der编码和base64编码的区别</h4><p>der编码           base64编码<br>直接导出证书  导出证书 -rfc<br>windows下可以点击证书复制到文件<br>相互转换：notepad++转base64</p>
-<h4 id="Nginx引入、使用证书"><a href="#Nginx引入、使用证书" class="headerlink" title="Nginx引入、使用证书"></a>Nginx引入、使用证书</h4><p>Nginx发布https服务，需要准备两个文件：一个是pem，证书文件，代表了服务公钥；一个是key，密钥文件，代表了服务私钥；</p>
-<p>pem可以直接使用base64编码的证书文件；<br>key则需要用openssl命令来从秘钥库导出；<br><code>openssl pkcs12 -nodes -nocerts -in -out</code></p>
+<p>要在nginx中开启TLS，需要先生成两个文件，一个是代表公钥的服务证书文件（.pem），一个是私钥的文件（.key）。此处公钥可以直接用windows的证书工具导出，私钥需要用openssl导出。</p>
+<pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 从密钥库中导出服务器私钥</span>
+openssl pkcs12 -in server.p12 -out server.key -nodes -nocerts</code></pre>
+
+<pre><div class="caption"><span>config</span></div><code class="hljs nginx"><span class="hljs-section">server</span> &#123;  
+ <span class="hljs-comment">#监听端口和域名  </span>
+ <span class="hljs-attribute">listen</span>      <span class="hljs-number">443</span> ssl;  
+ <span class="hljs-attribute">server_name</span>  localhost;  
+ <span class="hljs-comment">#以下两个为证书文件  </span>
+ <span class="hljs-attribute">ssl_certificate</span> D:/java/nginx-<span class="hljs-number">1</span>.<span class="hljs-number">14</span>.<span class="hljs-number">2</span>/cert/server-p.pem;  
+ <span class="hljs-attribute">ssl_certificate_key</span> D:/java/nginx-<span class="hljs-number">1</span>.<span class="hljs-number">14</span>.<span class="hljs-number">2</span>/cert/server.key;  
+ <span class="hljs-attribute">ssl_session_timeout</span> <span class="hljs-number">1m</span>;  
+ <span class="hljs-attribute">ssl_protocols</span> SSLv2 SSLv3 TLSv1.<span class="hljs-number">2</span>;  
+ <span class="hljs-attribute">ssl_ciphers</span>    ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256:AES128-SHA:AES256-SHA:RC4-SHA:DES-CBC3-SHA:RC4-MD5;  
+ <span class="hljs-attribute">ssl_prefer_server_ciphers</span>  <span class="hljs-literal">on</span>;  
+ <span class="hljs-comment">#location / &#123;  </span>
+ <span class="hljs-comment">#root D:/nginx/portal;  </span>
+ <span class="hljs-comment">#index index.html;  </span>
+ <span class="hljs-comment">#&#125;</span>
+ <span class="hljs-attribute">localtion</span> / &#123;
+ 	<span class="hljs-attribute">proxy_pass</span> http://localhost:8899;
+	<span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For $remote_addr;
+ &#125;
+ 
+ 
+ &#125;  
+<span class="hljs-comment"># 访问80端口时转发到443端口，转为https访问  </span>
+ <span class="hljs-section">server</span> &#123;  
+ <span class="hljs-attribute">listen</span>      <span class="hljs-number">80</span>;  
+ <span class="hljs-attribute">server_name</span>  localhost;  
+ <span class="hljs-attribute">return</span> <span class="hljs-number">301</span> https://$host$request_uri;  
+ &#125;</code></pre>
+
+<h5 id="ERR-CERT-COMMON-NAME-INVALID错误"><a href="#ERR-CERT-COMMON-NAME-INVALID错误" class="headerlink" title="ERR_CERT_COMMON_NAME_INVALID错误"></a>ERR_CERT_COMMON_NAME_INVALID错误</h5><p>域名和Common Name 一致，chrome依然报错，该问题如何解决？<br>原因在于浏览器校验域名并不是从CN入手，而是检查x509的扩展字段SAN（subject alter name），所以只有加上该扩展字段，才能让浏览器认为网站是安全的。</p>
+<p>针对keytool来说，有两个阶段可以加上该扩展字段：</p>
+<ol>
+<li>生成密钥对时</li>
+<li>签发证书时</li>
+</ol>
+<p>扩展字段的指定方法参考<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html">keytool文档</a></p>
+<p>如果是重新生成的证书未生效，需要清下浏览器缓存<br>chrome://net-internals/#hsts</p>
+<p>若还是不行，看看是不是Nginx进程没清干净。</p>
 <h4 id="待办"><a href="#待办" class="headerlink" title="待办"></a>待办</h4><ul>
 <li>什么时候会进行数字证书认证</li>
 <li>keytool -gencert -sigalg 有什么用</li>
@@ -167,11 +236,111 @@
 <li>名称问题<br>RSA三位发明者的名字的缩写<br>DSA则是 Digital Signature Algorithm 的缩写</li>
 <li>数学基础</li>
 <li>RSA基于大数分解（两个素数的乘积）</li>
-<li>DSA基于离散对数难题</li>
+<li>DSA基于离散对数难题<h4 id="指纹和签名的区别"><a href="#指纹和签名的区别" class="headerlink" title="指纹和签名的区别"></a>指纹和签名的区别</h4>指纹只是证书上的散列。主要用于人工接收，检查证书是否为预定证书，比如 打电话给 CA认证机构 并说出指纹进行核对。 浏览器是通过签名来验证证书的有效性的，浏览器不会关注指纹。<h4 id="数字证书的数据结构"><a href="#数字证书的数据结构" class="headerlink" title="数字证书的数据结构"></a>数字证书的数据结构</h4>CN(Common Name名字与姓氏)<br>OU(Organization Unit组织单位名称)<br>O(Organization组织名称)<br>L(Locality城市或区域名称)<br>ST(State州或省份名称)<br>C(Country国家名称）</li>
 </ul>
-<h4 id="数字证书的数据结构"><a href="#数字证书的数据结构" class="headerlink" title="数字证书的数据结构"></a>数字证书的数据结构</h4><p>CN(Common Name名字与姓氏)<br>OU(Organization Unit组织单位名称)<br>O(Organization组织名称)<br>L(Locality城市或区域名称)<br>ST(State州或省份名称)<br>C(Country国家名称）</p>
 <p><img src="/images/Pasted%20image%2020220123125851.png"><br>详细参考： <a target="_blank" rel="noopener" href="https://www.cem.me/20150209-cert-binaries-4.html">https://www.cem.me/20150209-cert-binaries-4.html</a></p>
-<h4 id="秘钥、与ssh打通"><a href="#秘钥、与ssh打通" class="headerlink" title="秘钥、与ssh打通"></a>秘钥、与ssh打通</h4><h4 id="域名及CName-AAA、AAAA"><a href="#域名及CName-AAA、AAAA" class="headerlink" title="域名及CName AAA、AAAA"></a>域名及CName AAA、AAAA</h4><h4 id="PGP和GPG加签模式的区别"><a href="#PGP和GPG加签模式的区别" class="headerlink" title="PGP和GPG加签模式的区别"></a>PGP和GPG加签模式的区别</h4><h3 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h3><blockquote>
+<ul>
+<li>头（4byte）<ul>
+<li>body(4byte + len)</li>
+<li>signalg(2byte + len(13))</li>
+<li>sign(5byte+ len)</li>
+</ul>
+</li>
+</ul>
+<p>以sha256签名为例<br>计算公式：len(body) = 总大小 - 4 - (2+13) - (5 + 256)</p>
+<p>body = cert[4:-276]</p>
+<h4 id="truststore和keystore的区别"><a href="#truststore和keystore的区别" class="headerlink" title="truststore和keystore的区别"></a>truststore和keystore的区别</h4><p>keystore用于存放自己的证书和对应私钥，通常里面的证书作为TLS端的身份。<br>truststore用于存放自己这端信任的带签名的证书。</p>
+<p>JKS、PKCS12都既可以做keystore也可以做truststore</p>
+<h4 id="CRL——证书吊销列表"><a href="#CRL——证书吊销列表" class="headerlink" title="CRL——证书吊销列表"></a>CRL——证书吊销列表</h4><p>证书超出有效期后会作废，用户也可以主动向 CA 申请撤销某证书文件，由于 CA 无法强制收回已经颁发出去的数字证书，因此为了实现证书的作废，往往还需要维护一个撤销证书列表（Certificate Revocation List，CRL），用于记录已经撤销的证书序号。</p>
+<p> 因此，通常情况下，当第三方对某个证书进行验证时，需要首先检查该证书是否在撤销列表中。如果存在，则该证书无法通过验证。如果不在，则继续进行后续的证书验证过程。</p>
+<p>值得注意的是： 目前有些 CA 颁发的证书和大部分自签SSL证书都没有提供吊销列表 (CRL) 服务或证书 吊销列表分发点是不可访问的 ，固然更别提 OSCP 服务，这是很是危险的，由于若是证书丢失或被盗而没法吊销的话，就极有可能被用于非法用途而让用户蒙受损失。</p>
+<h4 id="秘钥、与ssh打通"><a href="#秘钥、与ssh打通" class="headerlink" title="秘钥、与ssh打通"></a>秘钥、与ssh打通</h4><h4 id="域名及CName-AAA、AAAA"><a href="#域名及CName-AAA、AAAA" class="headerlink" title="域名及CName AAA、AAAA"></a>域名及CName AAA、AAAA</h4><h4 id="PGP和GPG加签模式的区别"><a href="#PGP和GPG加签模式的区别" class="headerlink" title="PGP和GPG加签模式的区别"></a>PGP和GPG加签模式的区别</h4><h4 id="openssl验签流程"><a href="#openssl验签流程" class="headerlink" title="openssl验签流程"></a>openssl验签流程</h4><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 转换 DER 到 PEM 格式</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -inform der -<span class="hljs-keyword">in</span> root.cer -out root.pem</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 查看证书的签名，可以看到签名所使用的的 <span class="hljs-built_in">hash</span> 算法是 sha256</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -<span class="hljs-keyword">in</span> root.pem -text -noout -certopt ca_default -certopt no_validity -certopt no_serial -certopt no_subject -certopt no_extensions -certopt no_signame</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 提取签名内容到文件中</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -<span class="hljs-keyword">in</span> root.pem -text -noout -certopt ca_default -certopt no_validity -certopt no_serial -certopt no_subject -certopt no_extensions -certopt no_signame | grep -v <span class="hljs-string">&#x27;Signature Algorithm&#x27;</span> | tr -d <span class="hljs-string">&#x27;[:space:]:&#x27;</span> | xxd -r -p &gt; root-signature.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 提取根证书中含有的公钥</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -<span class="hljs-keyword">in</span> root.pem -noout -pubkey &gt; root-pub.pem</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 使用公钥解密签名</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl rsautl -verify -inkey root-pub.pem -<span class="hljs-keyword">in</span> root-signature.bin -pubin &gt; root-signature-decrypted.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 查看解密后的内容</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl asn1parse -inform DER -<span class="hljs-keyword">in</span> root-signature-decrypted.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 接下来我们计算证书的 <span class="hljs-built_in">hash</span> 值</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 首先提取证书的 body</span>
+<span class="hljs-meta">#</span><span class="bash"> 因为证书中含有签名，签名是不包含在 <span class="hljs-built_in">hash</span> 值计算中的</span>
+<span class="hljs-meta">#</span><span class="bash"> 所以不能简单地对整个证书文件进行 <span class="hljs-built_in">hash</span> 运算</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl asn1parse -<span class="hljs-keyword">in</span> root.pem -strparse 4 -out root-body.bin &amp;&gt; /dev/null</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 计算 sha1 哈希值</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl dgst -sha256 root-body.bin</span>
+<span class="hljs-meta">#</span><span class="bash">SHA1(root-body.bin)= xxx</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> linux 下验证网站证书完整流程</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 新建一个文件夹 github 保存所有的文件</span>
+<span class="hljs-meta">$</span><span class="bash"> mkdir github &amp;&amp; <span class="hljs-built_in">cd</span> github</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 首先，我们下载 github.com 发送的证书</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl s_client -connect github.com:443 -showcerts 2&gt;/dev/null &lt;/dev/null | sed -n <span class="hljs-string">&#x27;/-----BEGIN/,/-----END/p&#x27;</span> &gt; github.com.crt</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> github.com.crt 是 PEM 格式的文本文件</span>
+<span class="hljs-meta">#</span><span class="bash"> 打开可以发现里面有两段 -----BEGIN CERTIFICATE----</span>
+<span class="hljs-meta">#</span><span class="bash"> 这说明有两个证书，也就是 github.com 把中间证书也一并发过来了</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 接下来我们把两个证书提取出来</span>
+<span class="hljs-meta">$</span><span class="bash"> awk <span class="hljs-string">&#x27;/BEGIN/,/END/&#123; if(/BEGIN/)&#123;a++&#125;; out=&quot;cert&quot;a&quot;.tmpcrt&quot;; print &gt;out&#125;&#x27;</span> &lt; github.com.crt &amp;&amp; <span class="hljs-keyword">for</span> cert <span class="hljs-keyword">in</span> *.tmpcrt; <span class="hljs-keyword">do</span> newname=$(openssl x509 -noout -subject -<span class="hljs-keyword">in</span> <span class="hljs-variable">$cert</span> | sed -n <span class="hljs-string">&#x27;s/^.*CN=\(.*\)$/\1/; s/[ ,.*]/_/g; s/__/_/g; s/^_//g;p&#x27;</span>).pem; mv <span class="hljs-variable">$cert</span> <span class="hljs-variable">$newname</span>; <span class="hljs-keyword">done</span></span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 我们得到了两个证书文件</span>
+<span class="hljs-meta">#</span><span class="bash"> github_com.pem 和 DigiCert_SHA2_High_Assurance_Server_CA.pem</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 首先，验证 github_com.pem 证书确实</span>
+<span class="hljs-meta">#</span><span class="bash"> 是由 DigiCert_SHA2_High_Assurance_Server_CA.pem 签发的</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 提取 DigiCert_SHA2_High_Assurance_Server_CA 的公钥</span>
+<span class="hljs-meta">#</span><span class="bash"> 命名为 issuer-pub.pem</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -<span class="hljs-keyword">in</span> DigiCert_SHA2_High_Assurance_Server_CA.pem -noout -pubkey &gt; issuer-pub.pem</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 查看 github_com.pem 的签名</span>
+<span class="hljs-meta">#</span><span class="bash"> 可以看到 <span class="hljs-built_in">hash</span> 算法是 sha256</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -<span class="hljs-keyword">in</span> github_com.pem -text -noout -certopt ca_default -certopt no_validity -certopt no_serial -certopt no_subject -certopt no_extensions -certopt no_signame</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 提取签名到文件中</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -<span class="hljs-keyword">in</span> github_com.pem -text -noout -certopt ca_default -certopt no_validity -certopt no_serial -certopt no_subject -certopt no_extensions -certopt no_signame | grep -v <span class="hljs-string">&#x27;Signature Algorithm&#x27;</span> | tr -d <span class="hljs-string">&#x27;[:space:]:&#x27;</span> | xxd -r -p &gt; github_com-signature.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 使用上级证书的公钥解密签名</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl rsautl -verify -inkey issuer-pub.pem -<span class="hljs-keyword">in</span> github_com-signature.bin -pubin &gt; github_com-signature-decrypted.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 查看解密后的信息</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl asn1parse -inform DER -<span class="hljs-keyword">in</span> github_com-signature-decrypted.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 接下来计算 github_com.pem 的 <span class="hljs-built_in">hash</span> 值</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 提取证书的 body 部分</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl asn1parse -<span class="hljs-keyword">in</span> github_com.pem -strparse 4 -out github_com-body.bin &amp;&gt; /dev/null</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 计算 <span class="hljs-built_in">hash</span> 值</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl dgst -sha256 github_com-body.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> <span class="hljs-built_in">hash</span> 值匹配，我们成功校验了 github.pem 这个证书确实是由 DigiCert_SHA2_High_Assurance_Server_CA.pem 这个证书来签发的。</span>
+
+上面的流程比较繁琐，其实也可以直接让 openssl 来帮我们验证。
+<span class="hljs-meta">$</span><span class="bash"> openssl dgst -sha256 -verify issuer-pub.pem -signature github_com-signature.bin  github_com-body.bin</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 获取上级证书的名字</span>
+<span class="hljs-meta">$</span><span class="bash"> openssl x509 -<span class="hljs-keyword">in</span> DigiCert_SHA2_High_Assurance_Server_CA.pem -text -noout | grep Issuer:</span>
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert High Assurance EV Root CA</code></pre>
+
+<h3 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h3><blockquote>
 <p>[序号]主要责任者.电子文献题名[电子文献及载体类型标识].电子文献的出版或获得地址,发表更新日期/引用日期.</p>
 </blockquote>
 <blockquote>
@@ -211,10 +380,22 @@
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6930446060846481416">https://juejin.cn/post/6930446060846481416</a></p>
 </li>
-<li><p><a target="_blank" rel="noopener" href="http://3ms.huawei.com/km/blogs/details/10441927?comment=17411983">手撕非对称密码原理（一） - 欧锻灏的博客 (huawei.com)</a></p>
+<li><p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/37041254/ssl-certificate-signature-algorithm-shows-sha256rsa-but-thumbprint-algorithm">security - SSL Certificate: Signature Algorithm shows “sha256rsa” but thumbprint algorithm shows “sha1” - Stack Overflow</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://cjting.me/2021/03/02/how-to-validate-tls-certificate/">https://cjting.me/2021/03/02/how-to-validate-tls-certificate/</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.ibm.com/docs/en/zosconnect/3.0?topic=ee-keystores-truststores">Keystores and truststores - IBM Documentation</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://support.huaweicloud.com/scm_faq/scm_01_0128.html">如何将证书格式转换为PEM格式？_SSL证书管理 SCM_常见问题_其他_证书管理类_华为云 (huaweicloud.com)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/43665243/invalid-self-signed-ssl-cert-subject-alternative-name-missing">https://stackoverflow.com/questions/43665243/invalid-self-signed-ssl-cert-subject-alternative-name-missing</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html">https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc5246">RFC 5246: The Transport Layer Security (TLS) Protocol Version 1.2 (rfc-editor.org)</a></p>
 </li>
 </ul>
-</article><ul class="pager blog-pager"><li class="next"><a href="/2022/01/04/ZeroTier%E6%A2%B3%E7%90%86/" data-toggle="tooltip" data-placement="top" title="ZeroTier 梳理">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/xr08255920" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
+</article><ul class="pager blog-pager"><li class="previous"><a href="/2022/01/28/PostMan%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%89%B4%E6%9D%83%E5%8F%82%E6%95%B0/" data-toggle="tooltip" data-placement="top" title="PostMan自动生成鉴权参数">上一篇</a></li><li class="next"><a href="/2022/01/04/ZeroTier%E6%A2%B3%E7%90%86/" data-toggle="tooltip" data-placement="top" title="ZeroTier 梳理">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/xr08255920" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
     <a target="_blank" rel="noopener" href="https://github.com/twoyao/beautiful-hexo">beautiful-hexo</a></span></p></div></div></div></footer><script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script><script src="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script><script src="/js/main.js"></script><!-- 代码高亮--><!-- 导航栏搜索框--><script src="/js/search.js"></script><script type="text/javascript" id="local.search.active">var inputArea       = document.querySelector("#local-search-input");
 inputArea.onclick   = function(){ getSearchFile(); this.onclick = null }
 inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 切换标签彩蛋--><script src="/js/crash_cheat.js"> </script><!--看板娘--><script src="/live2d-widget/autoload.js"> </script></body></html>
