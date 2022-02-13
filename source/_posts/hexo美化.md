@@ -478,3 +478,15 @@ header:
 avatar: /avatar.jfif
 favicon: /avatar.jfif
 ```
+
+## 布局自己的静态页面
+1. 把静态页面及资源放到`source`目录下
+2. 修改页面html，顶部添加如下代码：
+```html
+---
+layout: false
+---
+<html>
+  ...
+</html>
+```
