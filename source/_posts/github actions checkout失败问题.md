@@ -17,7 +17,7 @@ tags:
 1. 编写一个CI流程配置文件，里面包含了：
 	1. 触发CI的条件
 	2. CI流程每一步的操作
-2. 接下来比如从本地仓push代码到github，触发CI条件，然后github Actions 下的workflow就会按照CI配置文件对应的步骤进行相应的部署操作。
+2. 接下来比如从本地仓push代码到github，触发CI条件，然后github Actions 下的workflow就会按照CI配置文件对应的步骤进行相应的构建、部署操作。
 
 # CI配置文件的结构：
 - 触发条件
@@ -25,6 +25,8 @@ tags:
 	- 任务的每一步具体做什么
 
 	该配置通常为存放在项目根目录的 `.github/workflows/`下的yml文件
+
+
 # 什么是actions？
 通常 “任务的每一步具体动作”，由 run 命令来执行。而github的actions市场，则提供了一系列封装好的通用动作库。用法则是使用uses 命令来引入。
 
@@ -33,14 +35,14 @@ tags:
 该actions中的token选项，是指定PAT（Personal access token）
 
 # 什么是PAT
-Personal access token，个人账号范围（可以是组织范围）的一个token，在`Setting/developer settings`里面创建，该token用于在命令行操作个人github资源时鉴权用。在创建的时候，会让你选择该token的授权范围，以及指定token的过期时间，通常不建议设置永久期限，定期更换能减少token暴露风险。
+Personal access token，个人账号范围（可以是组织范围）的一个token，在`个人Setting/developer settings`里面创建，该token用于在命令行操作个人github资源时鉴权用。在创建的时候，会让你选择该token的授权范围，以及指定token的过期时间，通常不建议设置永久期限，定期更换能减少token暴露风险。
 
 # 如何在actions中引入PAT
-可以通过表达式`${{ secrets.PERSONAL_TOKEN }} `来引入，其中 secrets 是指**项目setting**中的secrets栏，PERSONAL_TOKEN是我们在secrets栏中创建的变量，创建的时候把上一步创建的PAT粘贴到变量值，之后即可以在Actions中通过表达式`${{ secrets.PERSONAL_TOKEN }}` 引入环境变量PAT
+可以通过表达式`${{ secrets.PERSONAL_TOKEN }} `来引入，其中 secrets 是指**项目setting**中的secrets栏，PERSONAL_TOKEN是我们在secrets栏中创建的变量，创建的时候把上一步创建的PAT粘贴到变量值，之后即可以在actions中通过表达式`${{ secrets.PERSONAL_TOKEN }}` 引入环境变量PAT
 
 
 # 回归问题
-造成该异常的主要原因就是PAT过期了，解决办法就是重新生成一个PAT，并重新设置到项目的"secrets.自定义变量名"中，只要跟CI配置文件的变量名匹配，就能重新成功跑通Actions/workflow构建流程了。
+造成该异常的主要原因就是PAT过期了，解决办法就是重新生成一个PAT，并重新设置到项目的"secrets.自定义变量名"中，只要CI配置文件的变量名跟"secrets.自定义变量名"匹配，就能重新成功跑通actions/checkout@v2构建流程了。
 
 
 # 参考资料：
