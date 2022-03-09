@@ -7,7 +7,7 @@
 <li>CI流程每一步的操作</li>
 </ol>
 </li>
-<li>接下来比如从本地仓push代码到github，触发CI条件，然后github Actions 下的workflow就会按照CI配置文件对应的步骤进行相应的部署操作。</li>
+<li>接下来比如从本地仓push代码到github，触发CI条件，然后github Actions 下的workflow就会按照CI配置文件对应的步骤进行相应的构建、部署操作。</li>
 </ol>
 <h1 id="CI配置文件的结构："><a href="#CI配置文件的结构：" class="headerlink" title="CI配置文件的结构："></a>CI配置文件的结构：</h1><ul>
 <li><p>触发条件</p>
@@ -17,13 +17,13 @@
 <li>任务的每一步具体做什么</li>
 </ul>
 <p>  该配置通常为存放在项目根目录的 <code>.github/workflows/</code>下的yml文件</p>
-<h1 id="什么是actions？"><a href="#什么是actions？" class="headerlink" title="什么是actions？"></a>什么是actions？</h1><p>通常 “任务的每一步具体动作”，由 run 命令来执行。而github的actions市场，则提供了一系列封装好的通用动作库。用法则是使用uses 命令来引入。</p>
 </li>
 </ul>
+<h1 id="什么是actions？"><a href="#什么是actions？" class="headerlink" title="什么是actions？"></a>什么是actions？</h1><p>通常 “任务的每一步具体动作”，由 run 命令来执行。而github的actions市场，则提供了一系列封装好的通用动作库。用法则是使用uses 命令来引入。</p>
 <h1 id="checkout-actions"><a href="#checkout-actions" class="headerlink" title="checkout actions"></a>checkout actions</h1><p>其中一个最流行的actions就是 actions/checkout@v2，可以在github.com/actions 页找到它，然后点进去查看相应文档。<br>该actions中的token选项，是指定PAT（Personal access token）</p>
-<h1 id="什么是PAT"><a href="#什么是PAT" class="headerlink" title="什么是PAT"></a>什么是PAT</h1><p>Personal access token，个人账号范围（可以是组织范围）的一个token，在<code>Setting/developer settings</code>里面创建，该token用于在命令行操作个人github资源时鉴权用。在创建的时候，会让你选择该token的授权范围，以及指定token的过期时间，通常不建议设置永久期限，定期更换能减少token暴露风险。</p>
-<h1 id="如何在actions中引入PAT"><a href="#如何在actions中引入PAT" class="headerlink" title="如何在actions中引入PAT"></a>如何在actions中引入PAT</h1><p>可以通过表达式<code>$&#123;&#123; secrets.PERSONAL_TOKEN &#125;&#125; </code>来引入，其中 secrets 是指<strong>项目setting</strong>中的secrets栏，PERSONAL_TOKEN是我们在secrets栏中创建的变量，创建的时候把上一步创建的PAT粘贴到变量值，之后即可以在Actions中通过表达式<code>$&#123;&#123; secrets.PERSONAL_TOKEN &#125;&#125;</code> 引入环境变量PAT</p>
-<h1 id="回归问题"><a href="#回归问题" class="headerlink" title="回归问题"></a>回归问题</h1><p>造成该异常的主要原因就是PAT过期了，解决办法就是重新生成一个PAT，并重新设置到项目的”secrets.自定义变量名”中，只要跟CI配置文件的变量名匹配，就能重新成功跑通Actions/workflow构建流程了。</p>
+<h1 id="什么是PAT"><a href="#什么是PAT" class="headerlink" title="什么是PAT"></a>什么是PAT</h1><p>Personal access token，个人账号范围（可以是组织范围）的一个token，在<code>个人Setting/developer settings</code>里面创建，该token用于在命令行操作个人github资源时鉴权用。在创建的时候，会让你选择该token的授权范围，以及指定token的过期时间，通常不建议设置永久期限，定期更换能减少token暴露风险。</p>
+<h1 id="如何在actions中引入PAT"><a href="#如何在actions中引入PAT" class="headerlink" title="如何在actions中引入PAT"></a>如何在actions中引入PAT</h1><p>可以通过表达式<code>$&#123;&#123; secrets.PERSONAL_TOKEN &#125;&#125; </code>来引入，其中 secrets 是指<strong>项目setting</strong>中的secrets栏，PERSONAL_TOKEN是我们在secrets栏中创建的变量，创建的时候把上一步创建的PAT粘贴到变量值，之后即可以在actions中通过表达式<code>$&#123;&#123; secrets.PERSONAL_TOKEN &#125;&#125;</code> 引入环境变量PAT</p>
+<h1 id="回归问题"><a href="#回归问题" class="headerlink" title="回归问题"></a>回归问题</h1><p>造成该异常的主要原因就是PAT过期了，解决办法就是重新生成一个PAT，并重新设置到项目的”secrets.自定义变量名”中，只要CI配置文件的变量名跟”secrets.自定义变量名”匹配，就能重新成功跑通actions/checkout@v2构建流程了。</p>
 <h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1RE411R7Uy?from=search&seid=4861890920343690403&spm_id_from=333.337.0.0" title="【CICD】github新功能actions全方位讲解！！">【CICD】_github_新功能_actions_全方位讲解！！</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/actions/checkout/issues/26">https://github.com/actions/checkout/issues/26</a></li>
