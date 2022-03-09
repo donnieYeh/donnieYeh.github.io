@@ -52,6 +52,27 @@
     
     
     <entry>
+      <title>python爬取邮件订阅的pinterest热门图片</title>
+      <link href="/2022/02/26/python%E7%88%AC%E5%8F%96%E9%82%AE%E4%BB%B6%E8%AE%A2%E9%98%85%E7%9A%84pinterest%E7%83%AD%E9%97%A8%E5%9B%BE%E7%89%87/"/>
+      <url>/2022/02/26/python%E7%88%AC%E5%8F%96%E9%82%AE%E4%BB%B6%E8%AE%A2%E9%98%85%E7%9A%84pinterest%E7%83%AD%E9%97%A8%E5%9B%BE%E7%89%87/</url>
+      
+        <content type="html"><![CDATA[<p><a href="https://github.com/xr08255920/picCrawler">项目地址</a></p><h1 id="来由"><a href="#来由" class="headerlink" title="来由"></a>来由</h1><p>不知何时开始订阅了pinterest的消息，pinterest会不时的发送热门图片到邮箱里。无奈于平时没时间也懒得去翻阅，堆积了有900+封pinterest的邮件。在某个下午突发奇想：如果能自动爬取热门图片，然后在电视大屏里轮播，把平时不怎么开的电视利用起来，当成一块动态大画框，貌似也挺不错。然后这个工具就产生了。</p><h1 id="构思"><a href="#构思" class="headerlink" title="构思"></a>构思</h1><p>要实现我的想法，梳理了以下大致有如下几步：</p><ol><li>获取pinterest邮件记录</li><li>打开热图链接，获取网页dom</li><li>解析网页dom，获取图片地址列表</li><li>爬取图片，保存到本地目录</li><li>电视通过smb协议访问电脑的壁纸目录，轮播图片</li></ol><p>拓展：</p><ol><li>图片去重，hash值存db中</li></ol><h1 id="过程记录"><a href="#过程记录" class="headerlink" title="过程记录"></a>过程记录</h1><h2 id="获取pinterest邮件记录"><a href="#获取pinterest邮件记录" class="headerlink" title="获取pinterest邮件记录"></a>获取pinterest邮件记录</h2><p>参考文章：</p><ul><li><a href="https://zhuanlan.zhihu.com/p/35521803">https://zhuanlan.zhihu.com/p/35521803</a></li></ul><p>使用python读取outlook邮件</p><ul><li>需要关注每次只拉未处理过的邮件</li></ul><p>跟着文章操作，可以顺利获取到pinterest未读邮件列表，以及其内容</p><p><a href="https://docs.microsoft.com/zh-cn/dotnet/api/microsoft.office.interop.outlook.items?view=outlook-pia">outlookAPI相关文档</a></p><h3 id="2种邮件处理策略"><a href="#2种邮件处理策略" class="headerlink" title="2种邮件处理策略"></a>2种邮件处理策略</h3><p>公共特征： </p><ul><li>sender address 包含 recommend</li><li>跳转链接带有 “utm_content” 字符串</li></ul><h4 id="图板推荐"><a href="#图板推荐" class="headerlink" title="图板推荐"></a>图板推荐</h4><p>特征：</p><ul><li>subject 包含“<strong>图板</strong>”二字</li><li>跳转到图板页，需要模拟浏览器动作以获取二级图片</li></ul><p>策略：</p><ul><li>图板的图我们可以只下载前20张</li></ul><h4 id="热门pin图"><a href="#热门pin图" class="headerlink" title="热门pin图"></a>热门pin图</h4><p>特征</p><ul><li>subject包含“pin图”二字</li><li>跳转到图片页，可直接获取图片链接</li></ul><hr><p>此处涉及到使用正则表达式过滤关键链接，相关操作参考：</p><pre><code class="hljs python"><span class="hljs-keyword">import</span> re// 匹配整串re.match// 搜索第一个匹配re.search// 搜索所有匹配re.findall</code></pre><h2 id="打开热图链接，获取网页dom"><a href="#打开热图链接，获取网页dom" class="headerlink" title="打开热图链接，获取网页dom"></a>打开热图链接，获取网页dom</h2><p>参考文章：</p><ul><li><a href="https://steam.oxxostudio.tw/category/python/spider/pinterest.html">https://steam.oxxostudio.tw/category/python/spider/pinterest.html</a></li><li><a href="https://www.selenium.dev/selenium/docs/api/py/index.html">selenium学习</a></li><li><a href="https://www.w3schools.com/xml/xpath_intro.asp">xpath学习</a></li><li><a href="https://www.w3schools.com/xml/xpath_syntax.asp">xpath语法手册</a></li><li><a href="https://blog.csdn.net/butthechi/article/details/80844330">https://blog.csdn.net/butthechi/article/details/80844330</a></li></ul><p>由于pinterest网页有个特性，就是每次只展示特定窗口范围的图片，在浏览器滚动过程中，前面的图片结点会消失，后面的图片结点会加载。所以没法一次性获取整个dom资源，需要模拟滚动网页，才能获取到完整的DOM。</p><p>这里使用selenium来实现模拟，需要了解一些前置知识：XPATH</p><h3 id="XPATH"><a href="#XPATH" class="headerlink" title="XPATH"></a>XPATH</h3><p>有7种结点类型：<br> element, attribute, text, namespace, processing-instruction, comment, and document nodes</p><ul><li>最上层的为 root Element node</li><li><code>&lt;title lang=&quot;en&quot;&gt;Harry Potter&lt;/title&gt;</code> 中的<code> lang=&quot;en&quot;</code>为attribute node</li><li><code>&lt;author&gt;J K. Rowling&lt;/author&gt;</code>中的<code>J K. Rowling</code>为text node</li><li>atomic value 指的是没有子节点和父节点的node，如text node</li><li>Items 指的是 atomic values 或者 nodes</li><li>ancestors（祖先）结点指的是<strong>包括父节点</strong>的所有上级结点</li><li>descendants（子孙）结点指的是<strong>包括子节点</strong>的所有下级结点</li></ul><p>模糊匹配属性：<code>//tr[contains(@class,&#39;result&#39;)] # 得到所有class 包含result的语句</code></p><hr><p>python set 定义：<code>imgs = &#123;&#125;</code></p><h2 id="解析网页dom，获取图片地址列表"><a href="#解析网页dom，获取图片地址列表" class="headerlink" title="解析网页dom，获取图片地址列表"></a>解析网页dom，获取图片地址列表</h2><p>使用BeautifulSoup + 正则轻松搞定</p><h2 id="爬取图片，保存到本地目录"><a href="#爬取图片，保存到本地目录" class="headerlink" title="爬取图片，保存到本地目录"></a>爬取图片，保存到本地目录</h2><hr><h1 id="后话"><a href="#后话" class="headerlink" title="后话"></a>后话</h1><ul><li>由于使用单线程处理，对pinterest服务器是友好的，以后考虑提升效率，或许会使用代理池+多线程抓取</li><li>后续考虑TB上看下有没有电子相框，这样连电视都不用开了</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> 爬虫 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>PostMan自动生成鉴权参数</title>
       <link href="/2022/01/28/PostMan%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%89%B4%E6%9D%83%E5%8F%82%E6%95%B0/"/>
       <url>/2022/01/28/PostMan%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%89%B4%E6%9D%83%E5%8F%82%E6%95%B0/</url>
