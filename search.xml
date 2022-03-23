@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>如何在一台机器管理两个github账号</title>
+      <link href="/2022/03/23/%E5%A6%82%E4%BD%95%E5%9C%A8%E4%B8%80%E5%8F%B0%E6%9C%BA%E5%99%A8%E7%AE%A1%E7%90%86%E4%B8%A4%E4%B8%AAgithub%E8%B4%A6%E5%8F%B7/"/>
+      <url>/2022/03/23/%E5%A6%82%E4%BD%95%E5%9C%A8%E4%B8%80%E5%8F%B0%E6%9C%BA%E5%99%A8%E7%AE%A1%E7%90%86%E4%B8%A4%E4%B8%AAgithub%E8%B4%A6%E5%8F%B7/</url>
+      
+        <content type="html"><![CDATA[<p>这个问题的背景比较特殊，不是每个人都会遇到</p><p>比如你和你的对象都有github账号，而且两人偶尔会用同一台电脑push东西，就会遇到这种问题</p><p>现假如我要在本机维护两套github账号，一个是donnie，一个是alpha</p><h1 id="一-创建密钥对"><a href="#一-创建密钥对" class="headerlink" title="一. 创建密钥对"></a>一. 创建密钥对</h1><p>先用命令创建各自对应的密钥对，按着步骤走，密钥存储的文件名要各自命名</p><pre><code class="hljs bash">ssh-keygen</code></pre><p>此时两个账号的密钥对存放到了<code>~/.ssh/</code>目录下了</p><h1 id="二-配置pubKey到GitHub账号下"><a href="#二-配置pubKey到GitHub账号下" class="headerlink" title="二. 配置pubKey到GitHub账号下"></a>二. 配置pubKey到GitHub账号下</h1><p>在本例中，会把<code>~/.ssh/id_rsa_alpha.pub</code>里的公钥配到<code>alpha</code>的GitHub账号下；<code>~/.ssh/id_rsa_donnieyeh.pub</code>里的公钥配置到donnie的GitHub账号下</p><h1 id="三-配置ssh-config"><a href="#三-配置ssh-config" class="headerlink" title="三. 配置ssh config"></a>三. 配置ssh config</h1><p>创建<code>~/.ssh/config</code>文件，为每个账号配置如下内容</p><pre><code class="hljs crmsh"><span class="hljs-comment"># donnie </span>Host donnieYehHostName github.com<span class="hljs-keyword">User</span> <span class="hljs-title">git</span>IdentityFile ~/.ssh/id_rsa_donnieyeh<span class="hljs-comment"># alpha</span>Host alphaHostName github.com<span class="hljs-keyword">User</span> <span class="hljs-title">git</span>IdentityFile ~/.ssh/id_rsa_alpha</code></pre><p>配置完后可以使用命令<code>ssh -T git@$&#123;Host&#125;</code>验证效果，例：</p><pre><code class="hljs bash">ssh -T git@donnieYehssh -T git@alpha</code></pre><p>出现以下响应代表配置成功了</p><pre><code class="hljs ada">Hi xxx! You<span class="hljs-symbol">&#x27;ve</span> successfully authenticated, but GitHub does <span class="hljs-keyword">not</span> provide shell <span class="hljs-keyword">access</span>.</code></pre><h1 id="四-修改提交人信息"><a href="#四-修改提交人信息" class="headerlink" title="四. 修改提交人信息"></a>四. 修改提交人信息</h1><p>由于一台机器有两个GitHub账号使用，所以不能配置全局提交人，不然提交信息就乱套了。</p><p>首先删除全局配置：</p><pre><code class="hljs bash">git config --global --<span class="hljs-built_in">unset</span> <span class="hljs-string">&#x27;user.name&#x27;</span>git config --global --<span class="hljs-built_in">unset</span> <span class="hljs-string">&#x27;user.email&#x27;</span></code></pre><p>然后再在各自的git仓库设置本地配置：</p><pre><code class="hljs bash">git config user.email xxx@gmail.comgit config user.name xxx</code></pre><h1 id="五-将远程仓库地址与账号配置进行关联"><a href="#五-将远程仓库地址与账号配置进行关联" class="headerlink" title="五. 将远程仓库地址与账号配置进行关联"></a>五. 将远程仓库地址与账号配置进行关联</h1><p>假如原仓库地址为：<br><code>git@github.com:xr08255920/picCrawler.git</code><br>或<br><code>https://github.com/xr08255920/picCrawler.git</code></p><p>则重新关联的远程仓库格式为：<br><code>git@$&#123;Host&#125;:xr08255920/picCrawler.git</code></p><p>之后进行远程仓库操作，git会自动按照<code>config</code>文件中的配置把<code>$&#123;Host&#125;</code>映射成<code>$&#123;HostName&#125;</code>，而且会使用对应的私钥进行通信</p><h2 id="实践："><a href="#实践：" class="headerlink" title="实践："></a>实践：</h2><p>若已经有现成的拉下来的远程仓库，则修改远程仓库的地址：</p><pre><code class="hljs bash"><span class="hljs-comment"># 查看现有的关联</span>$ git remote -vorigin  https://github.com/xr08255920/picCrawler.git (fetch)origin  https://github.com/xr08255920/picCrawler.git (push)<span class="hljs-comment"># 先删除原先绑定的地址</span>$ git remote remove origin<span class="hljs-comment"># 再重新添加 </span>$ git remote add origin git@donnieYeh:xr08255920/picCrawler.git</code></pre><p>若是新clone的仓库，自行手动把clone地址的<code>github.com</code>改成自己的<code>$&#123;Host&#125;</code>：</p><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> git@donnieYeh:xr08255920/picCrawler.git</code></pre><p>之后就能正常的进行仓库的各种管理操作啦</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 日常经验 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> github </tag>
+            
+            <tag> ssh </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>《java并发编程实战》读书笔记</title>
       <link href="/2022/03/10/%E3%80%8Ajava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
       <url>/2022/03/10/%E3%80%8Ajava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</url>
