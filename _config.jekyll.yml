@@ -11,12 +11,13 @@ header:
     title: "Yejf的篝火"
     motto: Being alone is not the same as loneliness, loneliness will panic, being alone is full.
     bigimgs:
-        - src: /bigimgs/87369142_p0_master1200.jpg
-        - src: /bigimgs/87706186_p0_master1200.jpg
-        - src: /bigimgs/88663580_p0_master1200.jpg
-        - src: /bigimgs/89209550_p0_master1200.jpg
-        - src: /bigimgs/89593224_p0_master1200.jpg
-        - src: /bigimgs/91523523_p0_master1200.jpg
+        - src: /bigimgs/87097542_p0.jpg
+        - src: /bigimgs/87988505_p0.png
+        - src: /bigimgs/89193760_p0.jpg
+        - src: /bigimgs/89415984_p0.jpg
+        - src: /bigimgs/90764347_p0.jpg
+        - src: /bigimgs/92629632_p0.jpg
+        - src: /bigimgs/92795311_p0.jpg
 
 
 rss: /atom.xml
