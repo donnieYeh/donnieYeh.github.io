@@ -36,7 +36,7 @@ highlight:
 # 自动解析该配置，可以追加任意多个图标
 footer:
   github:
-    link: 'https://github.com/xr08255920'
+    link: 'https://github.com/donnieYeh'
     title: GitHub
     icon: fa-github
     enable: true

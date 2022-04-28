@@ -70,7 +70,7 @@ git config user.name xxx
 假如原仓库地址为：
 `git@github.com:xr08255920/picCrawler.git`
 或
-`https://github.com/xr08255920/picCrawler.git`
+`https://github.com/donnieYeh/picCrawler.git`
 
 则重新关联的远程仓库格式为：
 `git@${Host}:xr08255920/picCrawler.git`
@@ -82,8 +82,8 @@ git config user.name xxx
 ```bash
 # 查看现有的关联
 $ git remote -v
-origin  https://github.com/xr08255920/picCrawler.git (fetch)
-origin  https://github.com/xr08255920/picCrawler.git (push)
+origin  https://github.com/donnieYeh/picCrawler.git (fetch)
+origin  https://github.com/donnieYeh/picCrawler.git (push)
 # 先删除原先绑定的地址
 $ git remote remove origin
 # 再重新添加 

@@ -6,7 +6,7 @@ tags:
 - 爬虫
 ---
 
-[项目地址](https://github.com/xr08255920/picCrawler)
+[项目地址](https://github.com/donnieYeh/picCrawler)
 
 # 来由
 不知何时开始订阅了pinterest的消息，pinterest会不时的发送热门图片到邮箱里。无奈于平时没时间也懒得去翻阅，堆积了有900+封pinterest的邮件。在某个下午突发奇想：如果能自动爬取热门图片，然后在电视大屏里轮播，把平时不怎么开的电视利用起来，当成一块动态大画框，貌似也挺不错。然后这个工具就产生了。
