@@ -30,6 +30,13 @@
   </url>
   
   <url>
+    <loc>http://xr08255920.github.io/2022/04/28/C++%E6%8C%87%E9%92%88%E7%90%86%E8%A7%A3/</loc>
+    
+    <lastmod>2022-04-28</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xr08255920.github.io/2021/11/26/DDD%E2%80%94%E2%80%94%E9%A9%B1%E5%8A%A8%E9%A2%86%E5%9F%9F%E8%AE%BE%E8%AE%A1/</loc>
     
     <lastmod>2022-04-28</lastmod>
@@ -312,6 +319,13 @@
 
   
   <url>
+    <loc>http://xr08255920.github.io/tags/c/</loc>
+    <lastmod>2022-04-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://xr08255920.github.io/tags/PostMan/</loc>
     <lastmod>2022-04-28</lastmod>
     <changefreq>daily</changefreq>
@@ -355,13 +369,6 @@
   
   <url>
     <loc>http://xr08255920.github.io/tags/%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</loc>
-    <lastmod>2022-04-28</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://xr08255920.github.io/tags/c/</loc>
     <lastmod>2022-04-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -522,6 +529,13 @@
   </url>
   
 
+  
+  <url>
+    <loc>http://xr08255920.github.io/categories/c/</loc>
+    <lastmod>2022-04-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
   
   <url>
     <loc>http://xr08255920.github.io/categories/%E6%95%88%E7%8E%87%E4%BA%BA%E7%94%9F/</loc>
