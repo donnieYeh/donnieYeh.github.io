@@ -1,6 +1,6 @@
 navbar-links:
     Archive: /archives
-    Github: https://xr08255920.github.io/
+    Github: https://donnieYeh.github.io/
     About: /about/
     Tags: /tags/
 
@@ -53,8 +53,8 @@ footer:
 
 google_analytics:
 
-site_counter:
-  show: true
+site_counter: true
+word_count: true
 
 comment:
   # false, disqus, netease or facebook
