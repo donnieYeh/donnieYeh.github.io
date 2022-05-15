@@ -52,7 +52,6 @@ footer:
     enable: true
 
 google_analytics:
-
 site_counter: true
 word_count: true
 

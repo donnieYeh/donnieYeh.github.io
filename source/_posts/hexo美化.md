@@ -251,7 +251,7 @@ site_counter:
 
 3. 在copyright下面一行插入展示元素即可
 ```jade footer.jade
-if theme.site_counter.show
+if theme.site_counter
 	<span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
 	span.meta-devider |
 	<span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span>
@@ -265,7 +265,7 @@ span.theme-by.text-muted.
 mixin post_meta(date, tags, showviews)
     p.post-meta Posted on #{full_date(date, "MMM D YYYY")}
       if showviews
-        if theme.site_counter.show
+        if theme.site_counter
           span.post-meta-group
             span#busuanzi_container_page_pv 
               span.with-love 
