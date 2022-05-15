@@ -5,13 +5,13 @@
 <pre><code class="hljs bash">ssh-keygen</code></pre>
 
 <p>此时两个账号的密钥对存放到了<code>~/.ssh/</code>目录下了</p>
-<h1 id="二-配置pubKey到GitHub账号下"><a href="#二-配置pubKey到GitHub账号下" class="headerlink" title="二. 配置pubKey到GitHub账号下"></a>二. 配置pubKey到GitHub账号下</h1><p>在本例中，会把<code>~/.ssh/id_rsa_alpha.pub</code>里的公钥配到<code>alpha</code>的GitHub账号下；<code>~/.ssh/id_rsa_donnieyeh.pub</code>里的公钥配置到donnie的GitHub账号下</p>
+<h1 id="二-配置pubKey到GitHub账号下"><a href="#二-配置pubKey到GitHub账号下" class="headerlink" title="二. 配置pubKey到GitHub账号下"></a>二. 配置pubKey到GitHub账号下</h1><p>在本例中，会把<code>~/.ssh/id_rsa_alpha.pub</code>里的公钥配到<code>alpha</code>的GitHub账号下；<code>~/.ssh/id_rsa_donnie.pub</code>里的公钥配置到donnie的GitHub账号下</p>
 <h1 id="三-配置ssh-config"><a href="#三-配置ssh-config" class="headerlink" title="三. 配置ssh config"></a>三. 配置ssh config</h1><p>创建<code>~/.ssh/config</code>文件，为每个账号配置如下内容</p>
 <pre><code class="hljs crmsh"><span class="hljs-comment"># donnie </span>
-Host donnieYeh
+Host donnie
 HostName github.com
 <span class="hljs-keyword">User</span> <span class="hljs-title">git</span>
-IdentityFile ~/.ssh/id_rsa_donnieyeh
+IdentityFile ~/.ssh/id_rsa_donnie
 
 <span class="hljs-comment"># alpha</span>
 Host alpha
@@ -20,7 +20,7 @@ HostName github.com
 IdentityFile ~/.ssh/id_rsa_alpha</code></pre>
 
 <p>配置完后可以使用命令<code>ssh -T git@$&#123;Host&#125;</code>验证效果，例：</p>
-<pre><code class="hljs bash">ssh -T git@donnieYeh
+<pre><code class="hljs bash">ssh -T git@donnie
 ssh -T git@alpha</code></pre>
 
 <p>出现以下响应代表配置成功了</p>
@@ -35,8 +35,8 @@ git config --global --<span class="hljs-built_in">unset</span> <span class="hljs
 <pre><code class="hljs bash">git config user.email xxx@gmail.com
 git config user.name xxx</code></pre>
 
-<h1 id="五-将远程仓库地址与账号配置进行关联"><a href="#五-将远程仓库地址与账号配置进行关联" class="headerlink" title="五. 将远程仓库地址与账号配置进行关联"></a>五. 将远程仓库地址与账号配置进行关联</h1><p>假如原仓库地址为：<br><code>git@github.com:xr08255920/picCrawler.git</code><br>或<br><code>https://github.com/donnieYeh/picCrawler.git</code></p>
-<p>则重新关联的远程仓库格式为：<br><code>git@$&#123;Host&#125;:xr08255920/picCrawler.git</code></p>
+<h1 id="五-将远程仓库地址与账号配置进行关联"><a href="#五-将远程仓库地址与账号配置进行关联" class="headerlink" title="五. 将远程仓库地址与账号配置进行关联"></a>五. 将远程仓库地址与账号配置进行关联</h1><p>假如原仓库地址为：<br><code>git@github.com:donnieYeh/picCrawler.git</code><br>或<br><code>https://github.com/donnieYeh/picCrawler.git</code></p>
+<p>则重新关联的远程仓库格式为：<br><code>git@$&#123;Host&#125;:donnieYeh/picCrawler.git</code></p>
 <p>之后进行远程仓库操作，git会自动按照<code>config</code>文件中的配置把<code>$&#123;Host&#125;</code>映射成<code>$&#123;HostName&#125;</code>，而且会使用对应的私钥进行通信</p>
 <h2 id="实践："><a href="#实践：" class="headerlink" title="实践："></a>实践：</h2><p>若已经有现成的拉下来的远程仓库，则修改远程仓库的地址：</p>
 <pre><code class="hljs bash"><span class="hljs-comment"># 查看现有的关联</span>
@@ -46,10 +46,10 @@ origin  https://github.com/donnieYeh/picCrawler.git (push)
 <span class="hljs-comment"># 先删除原先绑定的地址</span>
 $ git remote remove origin
 <span class="hljs-comment"># 再重新添加 </span>
-$ git remote add origin git@donnieYeh:xr08255920/picCrawler.git</code></pre>
+$ git remote add origin git@donnie:donnieYeh/picCrawler.git</code></pre>
 
 <p>若是新clone的仓库，自行手动把clone地址的<code>github.com</code>改成自己的<code>$&#123;Host&#125;</code>：</p>
-<pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> git@donnieYeh:xr08255920/picCrawler.git</code></pre>
+<pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> git@donnie:donnieYeh/picCrawler.git</code></pre>
 
 <p>之后就能正常的进行仓库的各种管理操作啦</p>
 </article><ul class="pager blog-pager"><li class="previous"><a href="/2022/04/05/TCP%20segment%20of%20a%20reassembled%20PDU/" data-toggle="tooltip" data-placement="top" title="what does &quot;TCP segment of a reassembled PDU&quot; mean?">上一篇</a></li><li class="next"><a href="/2022/03/10/%E3%80%8Ajava%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" data-toggle="tooltip" data-placement="top" title="《java并发编程实战》读书笔记">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/donnieYeh" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2022</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
