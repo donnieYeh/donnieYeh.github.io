@@ -1,7 +1,7 @@
 ---
 title:  hexo经验
 date: 2021-11-24 09:54
-tags:
+tags: hexo
 categories:
 ---
 ### 图片加载不出
@@ -83,3 +83,22 @@ Permalink是指部署网站时文章的url路径的展示方式。
 - 子模块用缩进表示
 - `header.someClass`表示`header`标签带`class=someClass`
 - `.someClass`单独出现表示默认使用`div`标签
+
+
+### 使用模板优先级
+layout
+	 page > post > index
+
+意思是，layout会作为通用模板。不在_posts目录下的文章属于page，page文章优先匹配page模板，若没有page模板则匹配post模板，若没有post模板则匹配index模板。
+
+hexo支持的根模板：https://hexo.io/docs/templates
+
+### 如何不渲染指定文件
+以下两种方法均可
+1. 参考官方文档：https://hexo.io/zh-cn/docs/configuration.html
+关键字：skip_render
+
+2. 参考官方文档：https://hexo.io/zh-cn/docs/writing.html
+关键字：layout: false
+
+扩展阅读：https://github.com/hexojs/hexo/issues/1146
