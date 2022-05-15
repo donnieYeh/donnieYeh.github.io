@@ -21,17 +21,17 @@ ssh-keygen
 此时两个账号的密钥对存放到了`~/.ssh/`目录下了
 
 # 二. 配置pubKey到GitHub账号下
-在本例中，会把`~/.ssh/id_rsa_alpha.pub`里的公钥配到`alpha`的GitHub账号下；`~/.ssh/id_rsa_donnieyeh.pub`里的公钥配置到donnie的GitHub账号下
+在本例中，会把`~/.ssh/id_rsa_alpha.pub`里的公钥配到`alpha`的GitHub账号下；`~/.ssh/id_rsa_donnie.pub`里的公钥配置到donnie的GitHub账号下
 
 # 三. 配置ssh config
 创建`~/.ssh/config`文件，为每个账号配置如下内容
 
 ```
 # donnie 
-Host donnieYeh
+Host donnie
 HostName github.com
 User git
-IdentityFile ~/.ssh/id_rsa_donnieyeh
+IdentityFile ~/.ssh/id_rsa_donnie
 
 # alpha
 Host alpha
@@ -42,7 +42,7 @@ IdentityFile ~/.ssh/id_rsa_alpha
 
 配置完后可以使用命令`ssh -T git@${Host}`验证效果，例：
 ```bash
-ssh -T git@donnieYeh
+ssh -T git@donnie
 ssh -T git@alpha
 ```
 
@@ -68,12 +68,12 @@ git config user.name xxx
 
 # 五. 将远程仓库地址与账号配置进行关联
 假如原仓库地址为：
-`git@github.com:xr08255920/picCrawler.git`
+`git@github.com:donnieYeh/picCrawler.git`
 或
 `https://github.com/donnieYeh/picCrawler.git`
 
 则重新关联的远程仓库格式为：
-`git@${Host}:xr08255920/picCrawler.git`
+`git@${Host}:donnieYeh/picCrawler.git`
 
 之后进行远程仓库操作，git会自动按照`config`文件中的配置把`${Host}`映射成`${HostName}`，而且会使用对应的私钥进行通信
 
@@ -87,12 +87,12 @@ origin  https://github.com/donnieYeh/picCrawler.git (push)
 # 先删除原先绑定的地址
 $ git remote remove origin
 # 再重新添加 
-$ git remote add origin git@donnieYeh:xr08255920/picCrawler.git
+$ git remote add origin git@donnie:donnieYeh/picCrawler.git
 ```
 
 若是新clone的仓库，自行手动把clone地址的`github.com`改成自己的`${Host}`：
 ```bash
-$ git clone git@donnieYeh:xr08255920/picCrawler.git
+$ git clone git@donnie:donnieYeh/picCrawler.git
 ```
 
 之后就能正常的进行仓库的各种管理操作啦
