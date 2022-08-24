@@ -4,6 +4,84 @@
   
     
     <entry>
+      <title>MQ思考总结</title>
+      <link href="/2022/08/24/MQ%E6%80%9D%E8%80%83%E6%80%BB%E7%BB%93/"/>
+      <url>/2022/08/24/MQ%E6%80%9D%E8%80%83%E6%80%BB%E7%BB%93/</url>
+      
+        <content type="html"><![CDATA[<h2 id="数据从一端到另一端，中途的所有链路和节点都可能丢失数据"><a href="#数据从一端到另一端，中途的所有链路和节点都可能丢失数据" class="headerlink" title="数据从一端到另一端，中途的所有链路和节点都可能丢失数据"></a>数据从一端到另一端，中途的所有链路和节点都可能丢失数据</h2><p>假设两端需要传输数据，则数据可能会在中途丢失<br>P -&gt; C</p><p>若增加一台broker来中转数据，则broker前后的链路传输途中可能丢失数据，broker自身也可能丢失数据<br>P -&gt; B -&gt; C</p><h2 id="解决数据丢失问题"><a href="#解决数据丢失问题" class="headerlink" title="解决数据丢失问题"></a>解决数据丢失问题</h2><p>1、防止P -&gt; B丢失，使用同步机制，或者异步+回调+本地消息表<br>2、防止B自身丢失，可使用定时持久化消息，使用分布式节点+冗余数据<br>3、防止B -&gt; C丢失，<del>可以使用同步机制</del>，或者异步+回调+本地消息表</p><p>其中，3的同步机制，即C每次Poll后，直到业务处理完，再commit消息。连接需要等待漫长的业务处理完后才能释放，明显不合理，很少使用<br>而3的异步+回调+本地消息表，则是C每次Poll完后直接释放连接，等待业务完成消息后，再回调broker commit消息，是大多MQ默认的手段</p><p>注意：消费端收到消息，要保证走完全流程处理才Commit消息，且只要走完业务全流程，哪怕处理失败，也应该commit。只有在处理消息过程中宕机这种极端情况，才需要重新消费</p><h2 id="提升数据传输过程吞吐量的思路，是减少端到端的网络通信次数"><a href="#提升数据传输过程吞吐量的思路，是减少端到端的网络通信次数" class="headerlink" title="提升数据传输过程吞吐量的思路，是减少端到端的网络通信次数"></a>提升数据传输过程吞吐量的思路，是减少端到端的网络通信次数</h2><p>1、P -&gt; B，可以在P设置缓冲区，定时或定量 批量传输消息，从“N条消息N次连接”优化为“N条消息1次连接”（同步机制）<br>2、B -&gt; C，C端批量Poll消息，定时 批量提交Commit请求，从“N条消息N次连接”优化为“N条消息2次连接”（异步+回调）</p><h2 id="MQ产品的特殊情况"><a href="#MQ产品的特殊情况" class="headerlink" title="MQ产品的特殊情况"></a>MQ产品的特殊情况</h2><p>Kafka，使用Offset作为B -&gt; C端的同步机制，只有当某个offset之前的所有消息都被消费了，这个offset才能更新到B端。这就导致了如果一个早期的消息一直得不到commit，offset无法被更新，则早期的消息会不断的被重发。这个问题可以通过阈值到期加入死信队列来解决</p><p>RocketMQ，为什么不使用Zookeeper作为注册中心，<strong>待调研</strong>,参考：<br>    - <a href="https://zhuanlan.zhihu.com/p/368773517">面试题系列：MQ 夺命连环11问 - 知乎 (zhihu.com)</a></p><h2 id="容错性优化"><a href="#容错性优化" class="headerlink" title="容错性优化"></a>容错性优化</h2><ol><li>B端不可靠的场景，在P端增加一个自消费的topic和机器，增加容错性</li><li>C端不可靠场景，增加一个临时Consumer端，吸收积压消息，转发到一个新的topic机器中做缓冲</li></ol><p>总结：针对节点不可靠场景，可以临时增加（或预设）机器模拟该节点，来消化和缓冲临时数据</p><h2 id="分布式节点-冗余数据的技术关键"><a href="#分布式节点-冗余数据的技术关键" class="headerlink" title="分布式节点+冗余数据的技术关键"></a>分布式节点+冗余数据的技术关键</h2><ol><li>需要多台机器能够自治<ol><li>心跳机制，保证节点健康监测的基础</li><li>选举机制，保证节点健康监测的可靠性</li></ol></li><li>需要保证多台机器的数据一致性<ol><li> raft协议</li></ol></li><li>提供多台Broker的发现机制：使用注册中心处理</li></ol>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> MQ </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>java请求https证书问题，`unable to find valid certification path to requested target`</title>
+      <link href="/2022/08/24/java%E8%AF%B7%E6%B1%82https%E8%AF%81%E4%B9%A6%E9%97%AE%E9%A2%98/"/>
+      <url>/2022/08/24/java%E8%AF%B7%E6%B1%82https%E8%AF%81%E4%B9%A6%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>使用okHttp请求某https服务（<a href="https://api.github.com/">https://api.github.com</a>），然而却报证书相关的错误：<code>unable to find valid certification path to requested target</code>，问题是如果直接用浏览器访问该地址，却是安全的。</p><h1 id="疑惑"><a href="#疑惑" class="headerlink" title="疑惑"></a>疑惑</h1><p>在未跟进源码之前，个人理解JAVA默认使用的是系统自带的CA证书，那么浏览器访问该HTTPS没问题，说明该服务是能够被系统内置的CA证书认证的，按理说JAVA访问也应该没问题才对。重点就在于为什么JAVA的和浏览器的表现不一致。</p><p>搜索引擎出来的全部都是教你如何绕过安全校验、信任所有HTTPS网站，这固然能临时解决问题，但根本就是因噎废食，这种解决是建立在牺牲安全性之上的！</p><h1 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h1><p>断点跟进源码，发现okhttp底层使用的是JDK原生工具库<code>sun.security.ssl</code>。再跟了几层，发现ssl库使用的信任证书库是指定路径下的<code>..\jdk1.8.0_292\jre\lib\security\cacerts</code>文件。</p><blockquote><p>读取配置代码：TrustStoreManager.TrustStoreDescriptor.createInstance()<br>信任库优先读取顺序：javax.net.ssl.trustStore（环境变量） &gt; cacerts文件（默认）</p></blockquote><p>通过<code>keytool</code>命令打印jdk的信任证书库。</p><pre><code class="hljs bash">keytool -list -keystore cacerts -rfc</code></pre><p>再在浏览器下载验证通过的根证书，存为base64格式。</p><p>对比二者，发现jdk的信任证书库并不包含该根证书。可见jdk的信任证书库与系统证书库不一致，导致了上文提到的表现上的差异。</p><h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>cd到<code>\jre\lib\security</code>目录下，然后导入缺少的那个根证书</p><pre><code class="hljs bash"><span class="hljs-comment"># 注意查看的时候不要求口令，但是修改的时候是要求口令的，而默认的口令就是 changeit</span>keytool -importcert -file target.cer -keystore cacerts -storepass changeit -storetype jks</code></pre><p>然后再重新跑一遍程序，很好，能正常请求https获取响应了</p><p>相关关键词：</p><ul><li>unable to find valid certification path to requested target</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> https </tag>
+            
+            <tag> 证书 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>maven repository mirror优先级</title>
+      <link href="/2022/08/24/maven%20repository%20mirror%E4%BC%98%E5%85%88%E7%BA%A7/"/>
+      <url>/2022/08/24/maven%20repository%20mirror%E4%BC%98%E5%85%88%E7%BA%A7/</url>
+      
+        <content type="html"><![CDATA[<ul><li>依赖的下载只会从repository中挑选仓库下载</li><li>  挑选仓库的顺序是从上到下</li><li>  如果下载依赖过程中出现问题（比如https证书校验失败），则会报错最上面第一个仓库找不到依赖</li><li>  mirror只会改变仓库地址的映射，不会影响加载顺序，通过 mirrorOf 与 repository的Id 绑定</li><li>  中心仓在超级pom中有配置，默认id=central，由于加载太慢，可以覆写中心仓的地址</li><li>  中心仓放在最后兜底查询</li><li>  mirror的mirrorOf * 配置，可以充当repository，作为终极兜底</li><li>  实践理解： mvn clean compile -X</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> maven </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>checked exception VS unchecked exception</title>
+      <link href="/2022/08/24/checked%20exception%20VS%20unchecked%20exception/"/>
+      <url>/2022/08/24/checked%20exception%20VS%20unchecked%20exception/</url>
+      
+        <content type="html"><![CDATA[<p>checked exception 即你在方法里某个逻辑抛出了这个异常，且在方法签名显式声明会抛出这个异常。<br>unchecked exception 即你在方法里某个逻辑抛出了这个异常，但是不会在方法签名显式声明抛出这个异常。</p><p>一个是抛了且要求调用层处理，一个是只抛不强制要求调用层处理。</p><p>其中一种声音是，是否声明checked异常取决于你判断caller是否关心这个异常。</p><blockquote><p>This is the philosophy used by many frameworks. Spring and hibernate, in particularly, come to mind - they convert known checked exception to unchecked exception precisely because checked exceptions are overused in Java. One example that I can think of is the JSONException from json.org, which is a checked exception and is mostly annoying - it should be unchecked, but the developer simply haven’t thought it through.</p></blockquote><p>异常可以从以下维度去理解，1、是否可预见的，2、是否可预防的，3、是否可恢复的（通过兜底、降级等手段）。针对以上维度，我们可以整理出如下的对策</p><ul><li>不可预见的：我们没有任何手段去阻止，通常只能尝试（try）去监测（catch），然后打印下日志，等待开发来修改BUG代码</li><li>可预见的<ul><li>可预防的：直接就在代码里预判且处理妥当了，比如常见的<code>StringUtils.isEmpty()</code></li><li>不可预防的：<ul><li>可恢复的：不可预防可以理解为，我们知道这事可能发生，但是我们没法阻止异常的发生，比如在”检查文件是否存在”和”读取文件内容”两个操作之间，文件被人删除了。这种异常我们无法通过写代码来阻止另外一个用户把文件删除，但是也不能置之不理，所以此时就要在方法签名中明确声明一个异常，调用层被迫要对该异常进行处理，可以是兜底、降级，当然调用层可以继续往外抛。</li><li>不可恢复的：如果预见一个不可预防的异常，且无法通过兜底、降级的手段解决，则提前声明checked exception也没意义，此时可采取的手段就跟“不可预见”异常一样了。</li></ul></li></ul></li></ul><p>以一个表格来进行小结：</p><table><thead><tr><th>可预见</th><th>可预防</th><th>可恢复</th><th>所属异常类型</th><th>可采取手段</th></tr></thead><tbody><tr><td>×</td><td>-</td><td>-</td><td>uncheck exception</td><td>try catch</td></tr><tr><td>√</td><td>√</td><td>-</td><td>not exception</td><td>代码规避</td></tr><tr><td>√</td><td>×</td><td>×</td><td>uncheck exception</td><td>try catch</td></tr><tr><td>√</td><td>×</td><td>√</td><td>checked exception</td><td>方法签名声明异常+调用方try catch</td></tr></tbody></table><blockquote><p>Compiler will check that we have done one of the two things (catch, or declare). So these are called Checked exceptions.</p></blockquote><blockquote><p>当在方法签名显式声明了throws Exception，编译器会检查（check）调用者需要执行这两个动作之一：1、进行catch  2、“继续声明throws Exception 往外抛”，否则过不了编译，所以这种异常叫做checked exception</p></blockquote><p>Checked Exceptions 应该用于可以合理恢复的可预测但不可预防的错误。</p><p>就像工作一样，处理Exception，理清责任很重要，如果一个checked exception由当前方法处理不当导致，则当前方法需要catch并做兜底处理，至少得打日志；反之如果判断它是由上层参数导致，则把异常外抛给调用层，而不是自己揽过来处理。</p><p>参考文章：</p><ul><li><a href="https://webcache.googleusercontent.com/search?q=cache:zKMFajzvoiQJ:https://www.geeksforgeeks.org/checked-vs-unchecked-exceptions-in-java/+&cd=4&hl=zh-CN&ct=clnk">Checked vs Unchecked Exceptions in Java - GeeksforGeeks (googleusercontent.com)</a></li><li><a href="https://stackoverflow.com/questions/27578/when-to-choose-checked-and-unchecked-exceptions">java - When to choose checked and unchecked exceptions - Stack Overflow</a></li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>股票开户学习笔记</title>
       <link href="/2022/05/15/%E8%82%A1%E7%A5%A8%E5%BC%80%E6%88%B7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
       <url>/2022/05/15/%E8%82%A1%E7%A5%A8%E5%BC%80%E6%88%B7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
@@ -636,9 +714,15 @@
       <link href="/2021/11/26/%E7%BC%96%E7%A0%81%E6%8E%A2%E7%A9%B6/"/>
       <url>/2021/11/26/%E7%BC%96%E7%A0%81%E6%8E%A2%E7%A9%B6/</url>
       
-        <content type="html"><![CDATA[<h2 id="JVM-参数：file-encoding"><a href="#JVM-参数：file-encoding" class="headerlink" title="JVM 参数：file.encoding"></a>JVM 参数：file.encoding</h2><hr><p>jvm 运行时采用unicode编码，所以java内部不会存在乱码问题。但是跟外部交互的文本，还是需要关注编码。</p><p>如果设置了file.encoding参数，System.in、System.out、string.getBytes()等都会使用这个设置的编码解析数据，否则使用平台的默认编码。</p><h2 id="JDBC编码"><a href="#JDBC编码" class="headerlink" title="JDBC编码"></a>JDBC编码</h2><hr><p>因为JAVA系统运行时采用unicode编码，如果数据库采用GBK或者utf8编码，则可能出现乱码问题。<br>Oracle数据库采用唯一编码，oracle的jdbc会自动将unicode转换为目标Oracle数据库的编码。<br>而Mysql可以同时使用多种编码，所以需要在Mysql JDBC的url中指定目标数据库的编码。</p><h2 id="servlet服务请求、响应编码"><a href="#servlet服务请求、响应编码" class="headerlink" title="servlet服务请求、响应编码"></a>servlet服务请求、响应编码</h2><hr><h3 id="ContentType"><a href="#ContentType" class="headerlink" title="ContentType"></a>ContentType</h3><p>可在请求、响应的ContentType处指定body的编码，如下：<br><code>Content-Type:application/x-www-form-urlencoded;charset=utf-8</code></p><h3 id="servletFilter"><a href="#servletFilter" class="headerlink" title="servletFilter"></a>servletFilter</h3><p>也可以统一在<br>无论是Spring的CharacterEncodingFilter还是request的setCharacterEncoding,都是为byte[]指定解码的规则，而不是转换。</p><blockquote><p>注意：CharacterEncodingFilter要设置在其他filter之前，以免parameter被提前解析</p></blockquote><h3 id="urlEncode"><a href="#urlEncode" class="headerlink" title="urlEncode"></a>urlEncode</h3><p>urlEncode就是对url特殊字符 = 、&amp;、? 等进行转义的编码方式，需要指定字符集编码，流程是：先编码 -&gt; 转成HexString -&gt; 每个HexString前加%</p><blockquote><p>经测试，Edge、postMan默认中文编码都是utf8</p></blockquote><h3 id="tomcat-连接器编码"><a href="#tomcat-连接器编码" class="headerlink" title="tomcat 连接器编码"></a>tomcat 连接器编码</h3><p>在post请求中，url和body是可以分开编码的（参考[[#urlEncode]]），而body可以相对灵活地指定编码。useBodyEncodingForURI、UriEncoding 都是用于指定 url 解码用的。当未指定时，tomcat默认使用utf8解码。</p><blockquote><p>关于body、url 编码的更详细研究，可以参考该<a href="https://www.cnblogs.com/yvkm/p/10551484.html">文章</a></p></blockquote><h4 id="1、UriEncoding"><a href="#1、UriEncoding" class="headerlink" title="1、UriEncoding"></a>1、UriEncoding</h4><p>解析参数时默认指定的url解码字符集，映射于tomcat源码中的：<code>queryStringCharset</code></p><h4 id="2、useBodyEncodingForURI"><a href="#2、useBodyEncodingForURI" class="headerlink" title="2、useBodyEncodingForURI"></a>2、useBodyEncodingForURI</h4><p>此时把该配置设为<code>true</code>，可以在解析url时使用body指定的编码（参考[[#ContentType]]），相当于强行覆盖body编码给url。它只是针对如”author=君山”的查询参数(QueryString)有效，他的设置对于URL和URI无效。</p><h3 id="编码优先级"><a href="#编码优先级" class="headerlink" title="编码优先级"></a>编码优先级</h3><p>body：contentType &gt; filter &gt; 默认<br>url：useBodyEncodingForURI &gt; UriEncoding</p><h2 id="C2-C3疑案"><a href="#C2-C3疑案" class="headerlink" title="C2 C3疑案"></a>C2 C3疑案</h2><p>在服务器接收中文参数（“捕鱼”）后，用iSO-8859-1解码，字符串变乱码，对乱码用不同的字符集编码，得到了两套HexString</p><table><thead><tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead><tbody><tr><td>客户端utf8编码</td><td>E6</td><td>8D</td><td>95</td><td>E9</td><td>B1</td><td>BC</td></tr><tr><td>8859 解码得到乱码字符</td><td>æ</td><td></td><td></td><td>é</td><td>±</td><td>¼</td></tr><tr><td>8859对字符再编码</td><td>E6</td><td>8D</td><td>95</td><td>E9</td><td>B1</td><td>BC</td></tr><tr><td>utf8对字符再编码</td><td>C3 A6</td><td>C2 8D</td><td>C2 95</td><td>C3 A9</td><td>C2 B1</td><td>C2 BC</td></tr></tbody></table><p>可以发现，①8859对乱码字符的编码，②utf8对乱码字符的编码。同一套字符，两套编码之间有种神秘而又规律的联系。</p><p>通过对比UTF8、ISO-8859-1两套字符集的对比，可以还原这里面的真相</p><h3 id="utf8编码规则"><a href="#utf8编码规则" class="headerlink" title="utf8编码规则"></a>utf8编码规则</h3><p>UTF-8是一种变长字节编码方式。对于某一个字符的UTF-8编码，如果只有一个字节则其最高二进制位为0；如果是多字节，其第一个字节从最高位开始，连续的二进制位值为1的个数决定了其编码的位数，其余各字节均以10开头。UTF-8最多可用到6个字节。<br>如表：<br>1字节 0xxxxxxx<br>2字节 110xxxxx 10xxxxxx<br>3字节 1110xxxx 10xxxxxx 10xxxxxx<br>4字节 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx<br>5字节 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx<br>6字节 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx</p><h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>西欧码（8859）的编码方式是纯序列。而UTF8的编码方式是 Unicode序列+特殊前缀，是为了达到可变长的目的。</p><p>ISO-8859-1字符集，可以算作ASCII的拓展，共256个字符，用一个Byte可以装完。所以当使用 8859 解码，得到的是与字节数一一对应的字符。而在UTF8字符集中，前256个字符的序列和 8859 是一致的。只是在编码时，还会对字符序列加上特定规则（[[#utf8编码规则]]）。此时UTF8再编码的序列中，频繁出现的C2、C3，实际上都是因为utf8的这种特殊的前缀规则导致的。</p><p>这个问题极易误导人地方在于，它可以让你解读为：①utf8对原字符的编码，②utf8对乱码字符的编码。同一套编码，两套字符之间有种神秘而又规律的联系。</p>]]></content>
+        <content type="html"><![CDATA[<h2 id="编码的本质"><a href="#编码的本质" class="headerlink" title="编码的本质"></a>编码的本质</h2><p>编码的本质含义是对一组事物进行标号。例：</p><ul><li>二进制编码：1是对高电平的标号，0是对低电平标号</li><li>ASCII编码：61是对字符图像<code>a</code>的标号，41是对字符图像<code>A</code>的标号</li><li>UTF8编码：113是字符图像<code>国</code>的标号</li><li>base64编码：对数字<code>0</code>，标记为A; 对数字<code>63</code>，标记为 /</li></ul><p>由上可见，标号的对象可以是任何事物，如电平、图像、甚至是数字。而标记的记号，也不一定是数字，如base64反直觉的用图像反过来标记数字。这取决于编码的实际用途，ASCII、UTF8这类字符集编码，目的是为了把图像转换成二进制； 而二进制编码，其中一个用途就是把电信号抽象成0、1两个数字，实现硬件层面的信息传输； 此时，二进制就成为了虚拟图形和现实电信号的桥梁，真正意义上的实现了底层的数据传输。而对于某些二进制数据，没有相应的字符集可以把它们转换为图像，为了便于人为操作这类数据（阅读、复制粘贴），base64出现了。</p><p>总结一下，上述各编码的用途：</p><ul><li>二进制编码：底层信息传输的基础</li><li>字符集编码：为了使文字图形能够在硬件层面传输</li><li>base64编码：为了方便人类操作二进制数据，主要还是复制粘贴</li></ul><p>到此为止，我们可以说，对照着某种规则，把目标转为编号，称之为<strong>编码</strong>；把编号转为目标对象，称之为<strong>解码</strong>。</p><h2 id="JVM-参数：file-encoding"><a href="#JVM-参数：file-encoding" class="headerlink" title="JVM 参数：file.encoding"></a>JVM 参数：file.encoding</h2><hr><p>jvm 运行时采用unicode编码，所以java内部不会存在乱码问题。但是跟外部交互的文本，还是需要关注编码。</p><p>如果设置了file.encoding参数，System.in、System.out、string.getBytes()等都会使用这个设置的编码解析数据，否则使用平台的默认编码。</p><h2 id="JDBC编码"><a href="#JDBC编码" class="headerlink" title="JDBC编码"></a>JDBC编码</h2><hr><p>因为JAVA系统运行时采用unicode编码，如果数据库采用GBK或者utf8编码，则可能出现乱码问题。<br>Oracle数据库采用唯一编码，oracle的jdbc会自动将unicode转换为目标Oracle数据库的编码。<br>而Mysql可以同时使用多种编码，所以需要在Mysql JDBC的url中指定目标数据库的编码。</p><h2 id="servlet服务请求、响应编码"><a href="#servlet服务请求、响应编码" class="headerlink" title="servlet服务请求、响应编码"></a>servlet服务请求、响应编码</h2><hr><h3 id="ContentType"><a href="#ContentType" class="headerlink" title="ContentType"></a>ContentType</h3><p>可在请求、响应的ContentType处指定body的编码，如下：<br><code>Content-Type:application/x-www-form-urlencoded;charset=utf-8</code></p><h3 id="servletFilter"><a href="#servletFilter" class="headerlink" title="servletFilter"></a>servletFilter</h3><p>也可以统一在<br>无论是Spring的CharacterEncodingFilter还是request的setCharacterEncoding,都是为byte[]指定解码的规则，而不是转换。</p><blockquote><p>注意：CharacterEncodingFilter要设置在其他filter之前，以免parameter被提前解析</p></blockquote><h3 id="urlEncode"><a href="#urlEncode" class="headerlink" title="urlEncode"></a>urlEncode</h3><p>urlEncode就是对url特殊字符 = 、&amp;、? 等进行转义的编码方式，需要指定字符集编码，流程是：先编码 -&gt; 转成HexString -&gt; 每个HexString前加%</p><blockquote><p>经测试，Edge、postMan默认中文编码都是utf8</p></blockquote><h3 id="tomcat-连接器编码"><a href="#tomcat-连接器编码" class="headerlink" title="tomcat 连接器编码"></a>tomcat 连接器编码</h3><p>在post请求中，url和body是可以分开编码的（参考[[#urlEncode]]），而body可以相对灵活地指定编码。useBodyEncodingForURI、UriEncoding 都是用于指定 url 解码用的。当未指定时，tomcat默认使用utf8解码。</p><blockquote><p>关于body、url 编码的更详细研究，可以参考该<a href="https://www.cnblogs.com/yvkm/p/10551484.html">文章</a></p></blockquote><h4 id="1、UriEncoding"><a href="#1、UriEncoding" class="headerlink" title="1、UriEncoding"></a>1、UriEncoding</h4><p>解析参数时默认指定的url解码字符集，映射于tomcat源码中的：<code>queryStringCharset</code></p><h4 id="2、useBodyEncodingForURI"><a href="#2、useBodyEncodingForURI" class="headerlink" title="2、useBodyEncodingForURI"></a>2、useBodyEncodingForURI</h4><p>此时把该配置设为<code>true</code>，可以在解析url时使用body指定的编码（参考[[#ContentType]]），相当于强行覆盖body编码给url。它只是针对如”author=君山”的查询参数(QueryString)有效，他的设置对于URL和URI无效。</p><h3 id="编码优先级"><a href="#编码优先级" class="headerlink" title="编码优先级"></a>编码优先级</h3><p>body：contentType &gt; filter &gt; 默认<br>url：useBodyEncodingForURI &gt; UriEncoding</p><h2 id="C2-C3疑案"><a href="#C2-C3疑案" class="headerlink" title="C2 C3疑案"></a>C2 C3疑案</h2><p>在服务器接收中文参数（“捕鱼”）后，用iSO-8859-1解码，字符串变乱码，对乱码用不同的字符集编码，得到了两套HexString</p><table><thead><tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead><tbody><tr><td>客户端utf8编码</td><td>E6</td><td>8D</td><td>95</td><td>E9</td><td>B1</td><td>BC</td></tr><tr><td>8859 解码得到乱码字符</td><td>æ</td><td></td><td></td><td>é</td><td>±</td><td>¼</td></tr><tr><td>8859对字符再编码</td><td>E6</td><td>8D</td><td>95</td><td>E9</td><td>B1</td><td>BC</td></tr><tr><td>utf8对字符再编码</td><td>C3 A6</td><td>C2 8D</td><td>C2 95</td><td>C3 A9</td><td>C2 B1</td><td>C2 BC</td></tr></tbody></table><p>可以发现，①8859对乱码字符的编码，②utf8对乱码字符的编码。同一套字符，两套编码之间有种神秘而又规律的联系。</p><p>通过对比UTF8、ISO-8859-1两套字符集的对比，可以还原这里面的真相</p><h3 id="utf8编码规则"><a href="#utf8编码规则" class="headerlink" title="utf8编码规则"></a>utf8编码规则</h3><p>UTF-8是一种变长字节编码方式。对于某一个字符的UTF-8编码，如果只有一个字节则其最高二进制位为0；如果是多字节，其第一个字节从最高位开始，连续的二进制位值为1的个数决定了其编码的位数，其余各字节均以10开头。UTF-8最多可用到6个字节。<br>如表：<br>1字节 0xxxxxxx<br>2字节 110xxxxx 10xxxxxx<br>3字节 1110xxxx 10xxxxxx 10xxxxxx<br>4字节 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx<br>5字节 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx<br>6字节 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx</p><h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>西欧码（8859）的编码方式是纯序列。而UTF8的编码方式是 Unicode序列+特殊前缀，是为了达到可变长的目的。</p><p>ISO-8859-1字符集，可以算作ASCII的拓展，共256个字符，用一个Byte可以装完。所以当使用 8859 解码，得到的是与字节数一一对应的字符。而在UTF8字符集中，前256个字符的序列和 8859 是一致的。只是在编码时，还会对字符序列加上特定规则（[[#utf8编码规则]]）。此时UTF8再编码的序列中，频繁出现的C2、C3，实际上都是因为utf8的这种特殊的前缀规则导致的。</p><p>这个问题极易误导人地方在于，它可以让你解读为：①utf8对原字符的编码，②utf8对乱码字符的编码。同一套编码，两套字符之间有种神秘而又规律的联系。</p>]]></content>
       
       
+      
+        <tags>
+            
+            <tag> 编码 </tag>
+            
+        </tags>
       
     </entry>
     
