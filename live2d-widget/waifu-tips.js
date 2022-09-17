@@ -280,6 +280,9 @@ function initWidget(config, apiPath) {
 			}, 0);
 		}
 	});
+	// 上来先隐藏看板娘，手动点开
+	localStorage.setItem("waifu-display", Date.now());
+	
 	if (localStorage.getItem("waifu-display") && Date.now() - localStorage.getItem("waifu-display") <= 86400000) {
 		toggle.setAttribute("first-time", true);
 		setTimeout(() => {
