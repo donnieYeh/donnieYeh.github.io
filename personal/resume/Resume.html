@@ -201,60 +201,6 @@ mark .md-meta { color: rgb(0, 0, 0); }
 .md-inline-math-container mjx-container { zoom: 0.95; }
 
 
-/* for resume  <-- */
-#write {
-    padding-top: 0px !important;
-    padding-bottom: 20px !important;
-}
-
-content {
-    margin-top: 0px !important;
-    padding-top: 0px !important;
-}
-
-a {
-    color: #000;
-}
-
-h1,
-h2 {
-    border-bottom: 1px solid #eee !important;
-    margin-bottom: 3px !important;
-    padding-bottom: 3px !important;
-}
-
-h2 img {
-    width: 16px !important;
-}
-
-h2 {
-    font-size: 17px !important;
-}
-
-p {
-    margin-bottom: 2px !important;
-    margin-top: 2px !important;
-}
-
-ul {
-    margin-top: 2px !important;
-    margin-bottom: 2px !important;
-}
-
-li p {
-    margin-bottom: 0px !important;
-}
-
-li.md-list-item {
-    line-height: 20px !important;
-}
-
-a {
-    color: #555 !important;
-}
-
-/* for resume --> */
-
 :root {
     --side-bar-bg-color: #fafafa;
     --control-text-color: #777;
@@ -262,32 +208,48 @@ a {
 
 @include-when-export url(https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
 
-html {
+/* open-sans-regular - latin-ext_latin */
+  /* open-sans-italic - latin-ext_latin */
+    /* open-sans-700 - latin-ext_latin */
+    /* open-sans-700italic - latin-ext_latin */
+  html {
     font-size: 16px;
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
-    font-family: "Open Sans", "Clear Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans","Clear Sans", "Helvetica Neue", Helvetica, Arial, 'Segoe UI Emoji', sans-serif;
     color: rgb(51, 51, 51);
     line-height: 1.6;
 }
 
 #write {
     max-width: 860px;
-    margin: 0 auto;
-    padding: 30px;
+  	margin: 0 auto;
+  	padding: 30px;
     padding-bottom: 100px;
 }
 
-#write>ul:first-child,
-#write>ol:first-child {
+@media only screen and (min-width: 1400px) {
+	#write {
+		max-width: 1024px;
+	}
+}
+
+@media only screen and (min-width: 1800px) {
+	#write {
+		max-width: 1200px;
+	}
+}
+
+#write > ul:first-child,
+#write > ol:first-child{
     margin-top: 30px;
 }
 
 a {
     color: #4183C4;
 }
-
 h1,
 h2,
 h3,
@@ -301,7 +263,6 @@ h6 {
     line-height: 1.4;
     cursor: text;
 }
-
 h1:hover a.anchor,
 h2:hover a.anchor,
 h3:hover a.anchor,
@@ -310,83 +271,84 @@ h5:hover a.anchor,
 h6:hover a.anchor {
     text-decoration: none;
 }
-
 h1 tt,
 h1 code {
     font-size: inherit;
 }
-
 h2 tt,
 h2 code {
     font-size: inherit;
 }
-
 h3 tt,
 h3 code {
     font-size: inherit;
 }
-
 h4 tt,
 h4 code {
     font-size: inherit;
 }
-
 h5 tt,
 h5 code {
     font-size: inherit;
 }
-
 h6 tt,
 h6 code {
     font-size: inherit;
 }
-
 h1 {
-    padding-bottom: .3em;
     font-size: 2.25em;
     line-height: 1.2;
     border-bottom: 1px solid #eee;
 }
-
 h2 {
-    padding-bottom: .3em;
     font-size: 1.75em;
     line-height: 1.225;
     border-bottom: 1px solid #eee;
 }
 
+/*@media print {
+    .typora-export h1,
+    .typora-export h2 {
+        border-bottom: none;
+        padding-bottom: initial;
+    }
+
+    .typora-export h1::after,
+    .typora-export h2::after {
+        content: "";
+        display: block;
+        height: 100px;
+        margin-top: -96px;
+        border-top: 1px solid #eee;
+    }
+}*/
+
 h3 {
     font-size: 1.5em;
     line-height: 1.43;
 }
-
 h4 {
     font-size: 1.25em;
 }
-
 h5 {
     font-size: 1em;
 }
-
 h6 {
-    font-size: 1em;
+   font-size: 1em;
     color: #777;
 }
-
 p,
 blockquote,
 ul,
 ol,
 dl,
-table {
+table{
     margin: 0.8em 0;
 }
-
 li>ol,
 li>ul {
     margin: 0 0;
 }
-
 hr {
     height: 2px;
     padding: 0;
@@ -400,71 +362,57 @@ hr {
 li p.first {
     display: inline-block;
 }
-
 ul,
 ol {
     padding-left: 30px;
 }
-
 ul:first-child,
 ol:first-child {
     margin-top: 0;
 }
-
 ul:last-child,
 ol:last-child {
     margin-bottom: 0;
 }
-
 blockquote {
     border-left: 4px solid #dfe2e5;
     padding: 0 15px;
     color: #777777;
 }
-
 blockquote blockquote {
     padding-right: 0;
 }
-
 table {
     padding: 0;
     word-break: initial;
 }
-
 table tr {
-    border-top: 1px solid #dfe2e5;
+    border: 1px solid #dfe2e5;
     margin: 0;
     padding: 0;
 }
-
 table tr:nth-child(2n),
 thead {
     background-color: #f8f8f8;
 }
-
-table tr th {
+table th {
     font-weight: bold;
     border: 1px solid #dfe2e5;
     border-bottom: 0;
-    text-align: left;
     margin: 0;
     padding: 6px 13px;
 }
-
-table tr td {
+table td {
     border: 1px solid #dfe2e5;
-    text-align: left;
     margin: 0;
     padding: 6px 13px;
 }
-
-table tr th:first-child,
-table tr td:first-child {
+table th:first-child,
+table td:first-child {
     margin-top: 0;
 }
-
-table tr th:last-child,
-table tr td:last-child {
+table th:last-child,
+table td:last-child {
     margin-bottom: 0;
 }
 
@@ -473,7 +421,7 @@ table tr td:last-child {
 }
 
 .code-tooltip {
-    box-shadow: 0 1px 1px 0 rgba(0, 28, 36, .3);
+    box-shadow: 0 1px 1px 0 rgba(0,28,36,.3);
     border-top: 1px solid #eef2f2;
 }
 
@@ -501,31 +449,28 @@ code {
 }
 
 
-.md-task-list-item>input {
-    margin-left: -1.3em;
+.md-task-list-item > input {
+  margin-left: -1.3em;
 }
 
 @media print {
     html {
         font-size: 13px;
     }
-
     table,
     pre {
         page-break-inside: avoid;
     }
-
     pre {
         word-wrap: break-word;
     }
 }
 
 .md-fences {
-    background-color: #f8f8f8;
+	background-color: #f8f8f8;
 }
-
 #write pre.md-meta-block {
-    padding: 1rem;
+	padding: 1rem;
     font-size: 85%;
     line-height: 1.45;
     background-color: #f7f7f7;
@@ -536,33 +481,29 @@ code {
 }
 
 .mathjax-block>.code-tooltip {
-    bottom: .375rem;
+	bottom: .375rem;
 }
 
 .md-mathjax-midline {
     background: #fafafa;
 }
 
-#write>h3.md-focus:before {
-    left: -1.5625rem;
-    top: .375rem;
+#write>h3.md-focus:before{
+	left: -1.5625rem;
+	top: .375rem;
 }
-
-#write>h4.md-focus:before {
-    left: -1.5625rem;
-    top: .285714286rem;
+#write>h4.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
 }
-
-#write>h5.md-focus:before {
-    left: -1.5625rem;
-    top: .285714286rem;
+#write>h5.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
 }
-
-#write>h6.md-focus:before {
-    left: -1.5625rem;
-    top: .285714286rem;
+#write>h6.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
 }
-
 .md-image>.md-meta {
     /*border: 1px solid #ddd;*/
     border-radius: 3px;
@@ -576,9 +517,9 @@ code {
     opacity: 1;
 }
 
-.md-toc {
-    margin-top: 20px;
-    padding-bottom: 20px;
+.md-toc { 
+    margin-top:20px;
+    padding-bottom:20px;
 }
 
 .sidebar-tabs {
@@ -602,15 +543,12 @@ code {
     border-left-color: rgba(85, 85, 85, 0.12);
 }
 
-header,
-.context-menu,
-.megamenu-content,
-footer {
+header, .context-menu, .megamenu-content, footer{
     font-family: "Segoe UI", "Arial", sans-serif;
 }
 
 .file-node-content:hover .file-node-icon,
-.file-node-content:hover .file-node-open-state {
+.file-node-content:hover .file-node-open-state{
     visibility: visible;
 }
 
@@ -623,9 +561,9 @@ footer {
     color: #b4654d;
 }
 
-.html-for-mac .context-menu {
+/*.html-for-mac {
     --item-hover-bg-color: #E6F0FE;
-}
+}*/
 
 #md-notification .btn {
     border: 0;
@@ -633,9 +571,25 @@ footer {
 
 .dropdown-menu .divider {
     border-color: #e5e5e5;
+    opacity: 0.4;
 }
 
- .typora-export li, .typora-export p, .typora-export,  .footnote-line {white-space: normal;} 
+.ty-preferences .window-content {
+    background-color: #fafafa;
+}
+
+.ty-preferences .nav-group-item.active {
+    color: white;
+    background: #999;
+}
+
+.menu-item-container a.menu-style-btn {
+    background-color: #f5f8fa;
+    background-image: linear-gradient( 180deg , hsla(0, 0%, 100%, 0.8), hsla(0, 0%, 100%, 0)); 
+}
+
+
+
 </style><title>Resume</title>
 </head>
 <body class='typora-export os-windows'><div class='typora-export-content'>
@@ -657,7 +611,7 @@ footer {
              <a href="https://donnieYeh.github.io">My Blog</a>
          </span>
      </div>
- </center><p>&nbsp;</p><h2 id='个人信息'><img src="assets/info-circle-solid.svg" width="30px"><span> 个人信息 </span></h2><ul><li><span>男，1993</span></li><li><span>求职意向：Java 开发工程师</span></li><li><span>工作经验：6年</span></li><li><span>教育经历：本科，三亚琼州大学，计算机科学与技术，2015届毕业</span></li></ul><h2 id='技能清单'><img src="assets/tools-solid.svg" width="30px"><span> 技能清单</span></h2><figure><table><thead><tr><th><span>近期常用技术：</span></th><th><span>曾用技术：</span></th></tr></thead><tbody><tr><td><span>开发工具： IDEA、Eclipse</span></td><td><span>框架：Struts2、Hibernate</span></td></tr><tr><td><span>前端框架&amp;技术：JQuery、Ajax、JS模块化技术</span></td><td><span>JavaWeb：Servlet 、JSP</span></td></tr><tr><td><span>框架：SpringCloud全家桶（netfilx）、mybatis</span></td><td><span>前端框架&amp;技术： reactJs、easyUI</span></td></tr><tr><td><span>中间件：kafka、Redis</span></td><td><span>数据库：Oracle</span></td></tr><tr><td><span>数据库：Mysql</span></td><td><span>版本控制：SVN</span></td></tr><tr><td><span>项目管理： GIT、MAVEN</span></td><td><span>消息中间件：rocketMq</span></td></tr><tr><td><span>其他：正则表达式、多线程、敏捷开发流程、arthas、wireshark、tcpdump、jprofiler、设计模式、数据结构、数据库调优</span></td><td><span>容器：docker</span></td></tr><tr><td><span>其他语言：python、JavaScript、GO</span></td><td>&nbsp;</td></tr></tbody></table></figure><h2 id='个人小作品'><img src="assets/tools-solid.svg" width="30px"><span> 个人小作品</span></h2><ul><li><a href='https://donnieyeh.github.io/2022/02/26/python%E7%88%AC%E5%8F%96%E9%82%AE%E4%BB%B6%E8%AE%A2%E9%98%85%E7%9A%84pinterest%E7%83%AD%E9%97%A8%E5%9B%BE%E7%89%87/'><span>python爬取邮件订阅的pinterest热门图片</span></a></li><li><a href='https://donnieyeh.github.io/2021/12/12/%E9%98%85%E8%AF%BB%E6%96%87%E7%AB%A0%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%A4%A7%E7%BA%B2%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6/'><span>JS实现的阅读文章自动生成大纲浏览器插件</span></a></li><li><a href='https://github.com/donnieYeh/my-yar2v'><span>使用docker技术在heroku平台上部署v2ray服务器</span></a></li></ul><h2 id='工作经历'><img src="assets/briefcase-solid.svg" width="30px"><span> 工作经历</span></h2><ul><li><p><strong><span>软通动力科技有限公司，华为应用市场，java后端，</span><span>	</span><span>2020/4——2022/2</span></strong></p></li><li><p><strong><span>软通动力科技有限公司，平安金管家，java后端，         2018/8——2019/8  </span></strong></p></li><li><p><strong><span>软通动力科技有限公司，平安“知筑”hr系统，java后端，         2016/3——2018/7</span></strong></p></li><li><p><strong><span>广东天宏通讯科技有限公司，开发部，OA开发（前后端），         2015/2——2016/2</span></strong></p><p><span> </span></p></li></ul><h2 id='项目经历'><img src="assets/project-diagram-solid.svg" width="30px"><span> 项目经历</span></h2><ul><li><p><strong><span>华为应用市场 项目—— app应用后端开发</span></strong></p><ul><li><p><span>主要担任MDE（Module Design Engineer）职责，进行需求分析，设计，拆分工作</span></p></li><li><p><span>曾担任</span><strong><span>鉴权微服务</span></strong><span>负责人，负责微服务相关的：新特性开发交付、依赖升级、代码评审、对接文档维护、打包发布、生产问题定位 等等工作</span></p></li><li><p><span>参与</span><strong><span>主干服务</span></strong><span>的日常新需求开发及服务维护。</span></p><ul><li><span>曾在版本迭代中后期时接任紧急需求，作为需求模块负责人，完成了需求设计拆分、以及成员开发进度跟踪、代码质量检视、功能对接进度跟踪等工作，</span><strong><span>在少量加班的情况下，合理分配6位开发，只用了11天、完成了80总人天的功能，0严重单、无延期上线</span></strong></li><li><span>承接性能优化需求，使用</span><strong><span>Jprofiler</span></strong><span>对</span><strong><span>压测性能</span></strong><span>较差的接口进行</span><strong><span>分析和优化</span></strong></li><li><span>承接sql优化需求，结合业务理解+</span><strong><span>执行计划</span></strong><span>进行</span><strong><span>慢Sql分析及优化</span></strong></li><li><span>熟练使用</span><strong><span>arthas、tcpdump</span></strong><span>等服务器运维工具，</span><strong><span>高效定位</span></strong><span>环境功能问题</span></li></ul></li><li><p><span>日常对接工作，如对接三方业务接口，中间件技术接入（灰度sdk、分布式秘钥管理、ABTest-sdk等等）</span></p></li><li><p><span>为组内成员提供技术培训、经验分享，如《数字证书》、《安全协议》等等</span></p></li></ul></li><li><p><strong><span>平安金管家 项目——app应用后端开发</span></strong></p><ul><li><span>部门产品“平安金管家”的新需求的评审、设计与开发、项目部署发布上线</span></li><li><span>与第三方合作对接开发，通过对对接的工具、标准进行制定，协助、指导合作方对接开发，联调。关键词：接口开墙、加签解签、字符编码、接口协议文档</span></li><li><span>项目重构，升级改造（拆分迁移spring cloud微服务）</span></li><li><span>站内信系统日常新增需求及维护。主要实现技术：kafka、redis</span></li><li><span>开发 优惠券系统，专门负责本平台和第三方平台的优惠券发放、使用优惠券等业务；此外包括裂变红包、优惠券分享等等业务。主要实现技术：rocketMQ</span></li><li><span>产品发货信息导出，产品物流信息导入。主要实现技术：rocketMQ</span></li><li><span>业务接口统一风控拦截入口。主要实现技术：spring拦截器、rocketMQ</span></li></ul><p>&nbsp;</p></li><li><p><strong><span>平安科技 知筑项目——人事系统后端开发</span></strong></p><ul><li><span>参与需求开发，从DB设计到业务功能实现</span></li><li><span>研究探索新技术ReactJS，并定期与项目组共享经验成果</span></li><li><span>负责敏捷流程中小组成员的进度记录、会议邀约等事项</span></li><li><span>后端技术架构：Spirng、Spirng MVC、MyBatis、oracle</span></li><li><span>前端技术架构：reactJS+Ant Design（蚂蚁金服UI）</span></li><li><span>1、报表涉及多张表的复杂操作，用redis缓存结果避免查询都要耗费大量资源</span>
+ </center><p>&nbsp;</p><h2 id='个人信息'><img src="assets/info-circle-solid.svg" width="30px"><span> 个人信息 </span></h2><ul><li><span>男，1993</span></li><li><span>求职意向：Java 开发工程师</span></li><li><span>工作经验：6年</span></li><li><span>教育经历：本科，三亚琼州大学，计算机科学与技术，2015届毕业</span></li></ul><h2 id='技能清单'><img src="assets/tools-solid.svg" width="30px"><span> 技能清单</span></h2><figure><table><thead><tr><th><span>近期常用技术：</span></th><th><span>曾用技术：</span></th></tr></thead><tbody><tr><td><span>开发工具： IDEA、Eclipse</span></td><td><span>框架：Struts2、Hibernate</span></td></tr><tr><td><span>前端框架&amp;技术：JQuery、Ajax、JS模块化技术</span></td><td><span>JavaWeb：Servlet 、JSP</span></td></tr><tr><td><span>框架：SpringCloud全家桶（netfilx）、mybatis</span></td><td><span>前端框架&amp;技术： reactJs、easyUI</span></td></tr><tr><td><span>中间件：kafka、Redis</span></td><td><span>数据库：Oracle</span></td></tr><tr><td><span>数据库：Mysql</span></td><td><span>版本控制：SVN</span></td></tr><tr><td><span>项目管理： GIT、MAVEN</span></td><td><span>消息中间件：rocketMq</span></td></tr><tr><td><span>其他：正则表达式、多线程、敏捷开发流程、arthas、wireshark、tcpdump、jprofiler、设计模式、数据结构、数据库调优</span></td><td><span>容器：docker</span></td></tr><tr><td><span>其他语言：python、JavaScript、GO</span></td><td>&nbsp;</td></tr></tbody></table></figure><h2 id='个人小作品'><img src="assets/tools-solid.svg" width="30px"><span> 个人小作品</span></h2><ul><li><a href='https://donnieyeh.github.io/2022/02/26/python%E7%88%AC%E5%8F%96%E9%82%AE%E4%BB%B6%E8%AE%A2%E9%98%85%E7%9A%84pinterest%E7%83%AD%E9%97%A8%E5%9B%BE%E7%89%87/'><span>python爬取邮件订阅的pinterest热门图片</span></a></li><li><a href='https://donnieyeh.github.io/2021/12/12/%E9%98%85%E8%AF%BB%E6%96%87%E7%AB%A0%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%A4%A7%E7%BA%B2%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6/'><span>JS实现的阅读文章自动生成大纲浏览器插件</span></a></li><li><a href='https://github.com/donnieYeh/my-yar2v'><span>使用docker技术在heroku平台上部署v2ray服务器</span></a></li></ul><h2 id='工作经历'><img src="assets/briefcase-solid.svg" width="30px"><span> 工作经历</span></h2><ul><li><p><strong><span>软通动力科技有限公司，华为应用市场，java后端，</span><span>	</span><span>2016/3——至今</span></strong></p></li><li><p><strong><span>广东天宏通讯科技有限公司，开发部，OA开发（前后端），         2015/2——2016/2</span></strong></p><p><span> </span></p></li></ul><h2 id='项目经历'><img src="assets/project-diagram-solid.svg" width="30px"><span> 项目经历</span></h2><ul><li><p><strong><span>华为应用市场 项目—— app应用后端开发</span></strong></p><ul><li><p><span>主要担任MDE（Module Design Engineer）职责，进行需求分析，设计，拆分工作</span></p></li><li><p><span>曾担任</span><strong><span>鉴权微服务</span></strong><span>负责人，负责微服务相关的：新特性开发交付、依赖升级、代码评审、对接文档维护、打包发布、生产问题定位 等等工作</span></p></li><li><p><span>参与</span><strong><span>主干服务</span></strong><span>的日常新需求开发及服务维护。</span></p><ul><li><span>曾在版本迭代中后期时接任紧急需求，作为需求模块负责人，完成了需求设计拆分、以及成员开发进度跟踪、代码质量检视、功能对接进度跟踪等工作，</span><strong><span>在少量加班的情况下，合理分配6位开发，只用了11天、完成了80总人天的功能，0严重单、无延期上线</span></strong></li><li><span>承接性能优化需求，使用</span><strong><span>Jprofiler</span></strong><span>对</span><strong><span>压测性能</span></strong><span>较差的接口进行</span><strong><span>分析和优化</span></strong></li><li><span>承接sql优化需求，结合业务理解+</span><strong><span>执行计划</span></strong><span>进行</span><strong><span>慢Sql分析及优化</span></strong></li><li><span>熟练使用</span><strong><span>arthas、tcpdump</span></strong><span>等服务器运维工具，</span><strong><span>高效定位</span></strong><span>环境功能问题</span></li></ul></li><li><p><span>日常对接工作，如对接三方业务接口，中间件技术接入（灰度sdk、分布式秘钥管理、ABTest-sdk等等）</span></p></li><li><p><span>为组内成员提供技术培训、经验分享，如《数字证书》、《安全协议》等等</span></p></li></ul></li><li><p><strong><span>平安金管家 项目——app应用后端开发</span></strong></p><ul><li><span>部门产品“平安金管家”的新需求的评审、设计与开发、项目部署发布上线</span></li><li><span>与第三方合作对接开发，通过对对接的工具、标准进行制定，协助、指导合作方对接开发，联调。关键词：接口开墙、加签解签、字符编码、接口协议文档</span></li><li><span>项目重构，升级改造（拆分迁移spring cloud微服务）</span></li><li><span>站内信系统日常新增需求及维护。主要实现技术：kafka、redis</span></li><li><span>开发 优惠券系统，专门负责本平台和第三方平台的优惠券发放、使用优惠券等业务；此外包括裂变红包、优惠券分享等等业务。主要实现技术：rocketMQ</span></li><li><span>产品发货信息导出，产品物流信息导入。主要实现技术：rocketMQ</span></li><li><span>业务接口统一风控拦截入口。主要实现技术：spring拦截器、rocketMQ</span></li></ul><p>&nbsp;</p></li><li><p><strong><span>平安科技 知筑项目——人事系统后端开发</span></strong></p><ul><li><span>参与需求开发，从DB设计到业务功能实现</span></li><li><span>研究探索新技术ReactJS，并定期与项目组共享经验成果</span></li><li><span>负责敏捷流程中小组成员的进度记录、会议邀约等事项</span></li><li><span>后端技术架构：Spirng、Spirng MVC、MyBatis、oracle</span></li><li><span>前端技术架构：reactJS+Ant Design（蚂蚁金服UI）</span></li><li><span>1、报表涉及多张表的复杂操作，用redis缓存结果避免查询都要耗费大量资源</span>
 <span>2、用微信的js_sdk解决分享时生成附带分享者信息的连接，同时记录此次分享行为到数据库，从而来跟踪分享的链路</span>
 <span>3、用redis提供分布式锁</span>
 <span>4、用拦截器+自定义annotation的方式来实时获取用户每次访问的内容，同时刷新用户在线状态</span>
