@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="author" content="yejf"><link rel="icon" href="/avatar.jpg"><title>hexo经验</title><meta name="description" content="Loneliness is not the same as loneliness, loneliness will panic, loneliness is full."><link rel="alternate" type="application/rss+xml" title="YeJF的篝火" href="/atom.xml"><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4.5.0/css/font-awesome.min.css"><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/styles/kimbie-dark.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"><script src="https://hm.baidu.com/hm.js?5be0398a8708180d8b755eb54268fe15"> </script><meta name="generator" content="Hexo 5.4.2"></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class="container-fluid"><div class="navbar-header"><button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#main-navbar"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="/">YeJF的篝火</a></div><div class="collapse navbar-collapse" id="main-navbar"><ul class="nav navbar-nav navbar-right"><li><form class="site-search-form"><i class="fa fa-search icon" aria-hidden="true"></i><input class="local-search-input-cls" type="text" id="local-search-input"></form><div class="local-search-result-cls" id="local-search-result"></div></li><li><a href="/archives">Archive</a></li><li><a href="https://donnieYeh.github.io/">Github</a></li><li><a href="/about/">About</a></li><li><a href="/tags/">Tags</a></li></ul></div><div class="avatar-container"><div class="avatar-img-border"><a href="/"><img class="avatar-img" src="/avatar.jpg"></a></div></div></div></nav><header class="header-section"><div class="intro-header no-img"><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class="post-heading"><h1>hexo经验</h1><p class="post-meta">Posted on 11月 24 2021</p><p class="post-meta"><span><span class="with-love"> <i class="fa fa-keyboard-o"></i></span><span class="post-meta-item-text">  文章字数: </span><span class="post-count">703</span><span class="post-meta-item-text">字</span></span><span class="post-meta-group"><span class="with-love"> <i class="fa fa-hourglass-half"></i></span><span class="post-meta-item-text">  阅读时长: </span><span class="post-count">2</span><span class="post-meta-item-text">min</span></span><span class="post-meta-group"><span id="busuanzi_container_page_pv"> <span class="with-love"> <i class="fa fa-eye"> </i></span><span>阅读次数：</span><span id="busuanzi_value_page_pv"></span></span></span></p><p class="post-meta"><span><span class="with-love"> <i class="fa fa-tag"></i></span><a class="tag post-meta" href="/tags/hexo/">hexo</a></span></p></div></div></div></div></div></header><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article class="blog-post" role="main"><h3 id="图片加载不出"><a href="#图片加载不出" class="headerlink" title="图片加载不出"></a>图片加载不出</h3><ul>
+<li>asset文件名不能有空格<ul>
+<li>文件名、引用都去掉空格</li>
+<li>或者引用的空格进行url编码：%20</li>
+</ul>
+</li>
+<li>marked渲染器的appendRoot，是指给asset地址插入 root 值</li>
+</ul>
+<h3 id="批量修改文件名"><a href="#批量修改文件名" class="headerlink" title="批量修改文件名"></a>批量修改文件名</h3><p>rename 命令</p>
+<pre><code class="hljs shell">rename oldstr newstr files
+rename &#x27;s/oldstr/newstr/&#x27; files</code></pre>
+
+<h3 id="替换文件内容"><a href="#替换文件内容" class="headerlink" title="替换文件内容"></a>替换文件内容</h3><pre><code class="hljs shell">sed -i &quot;s/原字符串/新字符串/g&quot; `grep 原字符串 -rl 所在目录`
+sed -选项 &quot;行,行 动作命令 动作命令参数 显示命令(p)&quot; 文件</code></pre>
+
+<blockquote>
+<p>invalid reference \1 on `s’ command’s RHS 错误：<br>-n 和 -i 不能同时使用，要么打印，要么修改</p>
+</blockquote>
+<h4 id="优秀实践"><a href="#优秀实践" class="headerlink" title="优秀实践"></a>优秀实践</h4><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 先通过grep找到想要的内容</span>
+<span class="hljs-meta">$</span><span class="bash"> grep <span class="hljs-string">&quot;\!\[&quot;</span> *</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> Graphviz.md:![](/images/Pasted_image_20201218173054.png)</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 使用sed -n 模式看下替换效果（-r表示使用正则）</span>
+<span class="hljs-meta">#</span><span class="bash"> 先写个伪代码</span>
+<span class="hljs-meta">$</span><span class="bash"> sed -nr <span class="hljs-string">&quot;s|![[.*?]]|test|gp&quot;</span> *</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 给特殊字符转义</span>
+<span class="hljs-meta">$</span><span class="bash"> sed -nr <span class="hljs-string">&quot;s|\!\[\[.*?\]\]|test|gp&quot;</span> *</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> <span class="hljs-built_in">test</span></span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 获取关键属性</span>
+<span class="hljs-meta">$</span><span class="bash"> sed -nr <span class="hljs-string">&quot;s|\!\[\[(.*?)\]\]|\1|gp&quot;</span> *</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> Pasted_image_20201218173054.png</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 补全新串</span>
+<span class="hljs-meta">$</span><span class="bash"> sed -nr <span class="hljs-string">&quot;s|\!\[\[(.*?)\]\]|\!\[\]\(\/images\/\1\)|gp&quot;</span> *</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> ![](/images/Pasted_image_20201218173054.png)</span>
+<span class="hljs-meta"></span>
+<span class="hljs-meta">#</span><span class="bash"> 改为 sed -i 替换模式（注意-i -r 要分开）</span>
+<span class="hljs-meta">$</span><span class="bash"> sed -i -r <span class="hljs-string">&quot;s|\!\[\[(.*?)\]\]|\!\[\]\(\/images\/\1\)|g&quot;</span> *</span></code></pre>
+
+<h3 id="什么是Permalink"><a href="#什么是Permalink" class="headerlink" title="什么是Permalink"></a>什么是Permalink</h3><p>Permalink是指部署网站时文章的url路径的展示方式。</p>
+<h3 id="好用的插件"><a href="#好用的插件" class="headerlink" title="好用的插件"></a>好用的插件</h3><ul>
+<li>pangu：盘古空白，可以自动给中英文间插入空白</li>
+</ul>
+<h3 id="主题渲染原理"><a href="#主题渲染原理" class="headerlink" title="主题渲染原理"></a>主题渲染原理</h3><p><img src="/images/Pasted%20image%2020211124145841.png"></p>
+<h3 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h3><p>模板引擎分为两部分：语言，渲染器</p>
+<p>常见语言有：</p>
+<ul>
+<li>jade，因为商标问题已经更名为pug，例：beautiful-hexo主题</li>
+<li>swig，例next主题</li>
+</ul>
+<p>通过对应的渲染器（hexo-renderer-xxx）可以渲染成完整的html</p>
+<h4 id="语法概要"><a href="#语法概要" class="headerlink" title="语法概要"></a>语法概要</h4><p>模板引擎语法通常有以下几种操作组合而成，<strong>本质上就是堆积木！</strong>：</p>
+<ul>
+<li>extends：扩展</li>
+<li>include：引入</li>
+<li>block：类似于抽象方法，子孙可以覆写具体实现（模板方法模式）</li>
+</ul>
+<blockquote>
+<p>由于 <code>layout.pug</code> 只用于被其他页面继承，并不会单独渲染成页面，因此，可以将文件名改为 <code>_layout.pug</code>（以下划线开头）这样 Hexo 就不会解析这个文件，可以提高 Hexo 生成页面的速度。</p>
+</blockquote>
+<h5 id="pug-语法概要"><a href="#pug-语法概要" class="headerlink" title="pug 语法概要"></a>pug 语法概要</h5><ul>
+<li>子模块用缩进表示</li>
+<li><code>header.someClass</code>表示<code>header</code>标签带<code>class=someClass</code></li>
+<li><code>.someClass</code>单独出现表示默认使用<code>div</code>标签</li>
+</ul>
+<h3 id="使用模板优先级"><a href="#使用模板优先级" class="headerlink" title="使用模板优先级"></a>使用模板优先级</h3><p>layout<br>     page &gt; post &gt; index</p>
+<p>意思是，layout会作为通用模板。不在_posts目录下的文章属于page，page文章优先匹配page模板，若没有page模板则匹配post模板，若没有post模板则匹配index模板。</p>
+<p>hexo支持的根模板：<a target="_blank" rel="noopener" href="https://hexo.io/docs/templates">https://hexo.io/docs/templates</a></p>
+<h3 id="如何不渲染指定文件"><a href="#如何不渲染指定文件" class="headerlink" title="如何不渲染指定文件"></a>如何不渲染指定文件</h3><p>以下两种方法均可</p>
+<ol>
+<li><p>参考官方文档：<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/configuration.html">https://hexo.io/zh-cn/docs/configuration.html</a><br>关键字：skip_render</p>
+</li>
+<li><p>参考官方文档：<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/writing.html">https://hexo.io/zh-cn/docs/writing.html</a><br>关键字：layout: false</p>
+</li>
+</ol>
+<p>扩展阅读：<a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues/1146">https://github.com/hexojs/hexo/issues/1146</a></p>
+</article><ul class="pager blog-pager"><li class="previous"><a href="/2021/11/26/%E7%BC%96%E7%A0%81%E6%8E%A2%E7%A9%B6/" data-toggle="tooltip" data-placement="top" title="编码探究">上一篇</a></li><li class="next"><a href="/2021/11/18/c++%E5%AD%A6%E4%B9%A0/" data-toggle="tooltip" data-placement="top" title="c++学习">下一篇</a></li></ul></div></div></div><footer><div class="container beautiful-jekyll-footer"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"><li><a target="_blank" rel="noopener" href="https://github.com/donnieYeh" title="GitHub"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-github"></i></span></a></li><li><a href="mailto:xr08255920@gmail.com" title="Email me"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-stack-1x fa-inverse fa-envelope"></i></span></a></li></ul><p class="copyright text-muted"><span>© 2024</span><span class="meta-devider">•</span><span class="with-love"><i class="fa fa-user"></i></span><span>yejf</span></p><p class="site_counter"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span><span class="meta-devider">|</span><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>次</span><span class="theme-by text-muted">Theme base on
+    <a target="_blank" rel="noopener" href="https://github.com/twoyao/beautiful-hexo">beautiful-hexo</a></span></p></div></div></div></footer><script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script><script src="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script><script src="/js/main.js"></script><!-- 代码高亮--><!-- 导航栏搜索框--><script src="/js/search.js"></script><script type="text/javascript" id="local.search.active">var inputArea       = document.querySelector("#local-search-input");
+inputArea.onclick   = function(){ getSearchFile(); this.onclick = null }
+inputArea.onkeydown = function(){ if(event.keyCode == 13) return false }</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><!-- 切换标签彩蛋--><script src="/js/crash_cheat.js"> </script><!--看板娘--><script src="/live2d-widget/autoload.js"> </script></body></html>
