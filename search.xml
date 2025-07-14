@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>如何在一台机器管理两个github账号</title>
+      <link href="/2025/07/14/BodySlide%20%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/"/>
+      <url>/2025/07/14/BodySlide%20%E5%85%A8%E9%9D%A2%E5%89%96%E6%9E%90/</url>
+      
+        <content type="html"><![CDATA[<p><strong>从一个服装模组开始切入。</strong></p><h1 id="假设与验证"><a href="#假设与验证" class="headerlink" title="假设与验证"></a>假设与验证</h1><p>服装通常提供一个ESP，然后就可以从游戏里获取该服装。<br>ESP中的armor数据，指定了mesh（.nif）的路径<br>    通过<strong>SSEEdit</strong>验证<br>    默认导航到<code>data/meshes</code>目录<br>Nif指定了材质（Texture）的路径<br>    通过<strong>文本打开NIF文件，搜索Texture</strong>验证<br>    通常导航到<code>data/Textures</code>目录</p><p>ESP是什么？为什么安装一个ESP就可以得到服装？</p><hr><h1 id="Bodyslide-假设与验证"><a href="#Bodyslide-假设与验证" class="headerlink" title="Bodyslide 假设与验证"></a>Bodyslide 假设与验证</h1><p>先加载<code>data</code>目录下所有的ESP，提取出服装相关的内容<br>根据Groups、Presets配置，确定分组关系<br>一个outfit，通常由多个部件（nif）组成<br>而osp（outfit studio project）就是把多个部件有机组成一个完整outfit的项目文件<br>bodyslide界面根据osp来加载可视化预览</p><ul><li><a href="#%E6%9E%84%E5%BB%BA%E8%B7%AF%E5%BE%84%E7%9A%84%E7%A1%AE%E8%AE%A4">为什么<strong>构建</strong>服装后，可以随意散乱的输出到mesh目录？然后游戏内就可以获得效果？</a></li><li>bodyslide怎样加载所有oufit的：通过扫描esp、BSA文件</li><li><a href="#outfit%E3%80%81group%E3%80%81groups%E3%80%81preset%E7%89%A9%E7%90%86%E5%85%B3%E8%81%94">outfit怎么关联到分组（group）、分组集合（groups）、预设的（preset）</a></li><li><a href="#SliderSets%E5%92%8CShapeData%E7%9A%84%E4%BD%9C%E7%94%A8">SliderSets目录里的osp和ShapeData里的osd文件都是在什么交互场景下会用上的？</a></li></ul><h2 id="构建路径的确认"><a href="#构建路径的确认" class="headerlink" title="构建路径的确认"></a>构建路径的确认</h2><p>如<a href="#%E5%81%87%E8%AE%BE%E4%B8%8E%E9%AA%8C%E8%AF%81">假设与验证</a>中所述，nif的输出路径由ESP内的配置决定</p><h2 id="outfit、group、groups、preset物理关联"><a href="#outfit、group、groups、preset物理关联" class="headerlink" title="outfit、group、groups、preset物理关联"></a>outfit、group、groups、preset物理关联</h2><ul><li>关联到group、groups：通过<code>SliderGroups</code>目录中的xml配置</li><li>关联到preset：通过SliderPresets目录中的xml配置，间接关联</li></ul><h2 id="SliderSets和ShapeData的作用"><a href="#SliderSets和ShapeData的作用" class="headerlink" title="SliderSets和ShapeData的作用"></a>SliderSets和ShapeData的作用</h2><h3 id="SliderSets"><a href="#SliderSets" class="headerlink" title="SliderSets"></a>SliderSets</h3><p>在 BodySlide 中加载项目：</p><ul><li>场景：当用户在 BodySlide 的图形界面中选择一个身体或服装项目（如 CBBE 身体或某件盔甲）时，BodySlide 读取 SliderSets 中的 .osp 文件以加载滑块和预设。</li><li>细节：BodySlide 的下拉菜单（如 “Outfit/Body”）显示 .osp 文件中定义的项目，用户选择后可调整滑块，预览模型变化。</li><li>示例：用户选择 CBBE Body 项目，BodySlide 加载 CBBEBody.osp，显示相关滑块供调整。</li></ul><h3 id="ShapeData"><a href="#ShapeData" class="headerlink" title="ShapeData"></a>ShapeData</h3><p>滑块的选项是由体型mod，如cbbe、3ba提供，但是他们只提供滑块，具体滑动后参产生的效果，由.osd决定的，每个outfit有自己的.osd，决定了滑块对outfit的具体影响，意味着，如果没有osd，滑块对outfit就没影响了。<br>另外，ShapeData目录还提供了基础网格（nif），在BS里加载基础网格，经过自定义调整，然后才能输出得到最终网格。</p><h1 id="各参数联系"><a href="#各参数联系" class="headerlink" title="各参数联系"></a>各参数联系</h1><p>base目录：`Data\CalienteTools\BodySlide\</p><table><thead><tr><th>数据</th><th>说明</th><th>目录</th><th>格式</th></tr></thead><tbody><tr><td>outfit/body</td><td>服装、体型 资产</td><td>Data</td><td>.esp</td></tr><tr><td>group</td><td>逻辑上定义了哪些资产为一组</td><td>None</td><td>\</td></tr><tr><td>groups</td><td>多个group的组合</td><td>SliderGroups</td><td>.xml</td></tr><tr><td>preset</td><td>slide预设，存储滑块信息</td><td>SliderPresets</td><td>.xml</td></tr><tr><td>以下仅做补充</td><td></td><td></td><td></td></tr><tr><td>.osp</td><td>outfit项目文件</td><td>SliderSets</td><td>.osp</td></tr><tr><td>.osd</td><td>计算滑块偏移值（应用于outfit）</td><td>ShapeData</td><td>.osp</td></tr><tr><td><img src="bodyslide_relation.png" alt="关系图"></td><td></td><td></td><td></td></tr></tbody></table>]]></content>
+      
+      
+      <categories>
+          
+          <category> 游戏 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> skyrimSE </tag>
+            
+            <tag> BodySlide </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>MQ思考总结</title>
       <link href="/2022/08/24/MQ%E6%80%9D%E8%80%83%E6%80%BB%E7%BB%93/"/>
       <url>/2022/08/24/MQ%E6%80%9D%E8%80%83%E6%80%BB%E7%BB%93/</url>
